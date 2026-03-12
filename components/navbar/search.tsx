@@ -52,24 +52,32 @@ const Search = () => {
   }, [guestCount]);
 
   return (
-    <div
-      onClick={searchModal.onOpen}
-      className="border-[1px] w-full md:w-auto py-2 rounded-full shadow-sm hover:shadow-md transition cursor-pointer"
-    >
-      <div className="flex items-center justify-between">
-        <div className="font-semibold text-sm px-6">{locationLabel}</div>
-        <div className="hidden sm:block font-semibold text-sm text-center px-6 border-x-[1px] flex-1">
-          {durationLabel}
-        </div>
-        <div className="flex items-center gap-3 text-sm pl-6 pr-2 text-gray-600">
-          <div className="hidden sm:block">{guestLabel}</div>
-          <div className="bg-black text-white p-2 rounded-full">
-            <BiSearch size={18} />
-          </div>
+  <div className="border-[1px] w-full md:w-auto py-2 rounded-full shadow-sm hover:shadow-md transition cursor-pointer">
+    <div className="flex items-center justify-between">
+      <div
+        onClick={() => searchModal.onOpen(0)}
+        className="font-semibold text-sm px-6"
+      >
+        {locationLabel}
+      </div>
+      <div
+        onClick={() => searchModal.onOpen(1)}
+        className="hidden sm:block font-semibold text-sm text-center px-6 border-x-[1px] flex-1"
+      >
+        {durationLabel}
+      </div>
+      <div
+        onClick={() => searchModal.onOpen(2)}
+        className="flex items-center gap-3 text-sm pl-6 pr-2 text-gray-600"
+      >
+        <div className="hidden sm:block">{guestLabel}</div>
+        <div className="bg-black text-white p-2 rounded-full">
+          <BiSearch size={18} />
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default Search;

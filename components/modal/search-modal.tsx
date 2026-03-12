@@ -31,7 +31,12 @@ const SearchModal: React.FC<SearchModalProps> = ({}) => {
 
   const searchModal = useSearchModal();
 
-  const [step, setStep] = React.useState(STEPS.LOCATION);
+  const { initialStep } = searchModal;
+const [step, setStep] = React.useState(STEPS.LOCATION);
+
+React.useEffect(() => {
+  setStep(initialStep);
+}, [initialStep]);
   const [location, setLocation] = React.useState<CountrySelectValue>();
   const [guestCount, setGuestCount] = React.useState(1);
   const [roomCount, setRoomCount] = React.useState(1);
