@@ -41,7 +41,7 @@ const GUIDE_LISTINGS = [
     category: "Heritage Tour",
     locationValue: "CN",
     price: 259,
-    imageSrc: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800",
+    imageSrc: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800",
     guestCount: 8,
     roomCount: 1,
     bathroomCount: 0,
@@ -74,7 +74,7 @@ const GUIDE_LISTINGS = [
     category: "Nature & Culture",
     locationValue: "CN",
     price: 318,
-    imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800",
+    imageSrc: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800",
     guestCount: 4,
     roomCount: 1,
     bathroomCount: 0,
@@ -96,7 +96,7 @@ const GUIDE_LISTINGS = [
     category: "Heritage Tour",
     locationValue: "CN",
     price: 338,
-    imageSrc: "https://images.unsplash.com/photo-1547981609-4b8f5f8df14a?w=800",
+    imageSrc: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800",
     guestCount: 5,
     roomCount: 1,
     bathroomCount: 0,
@@ -107,7 +107,7 @@ const GUIDE_LISTINGS = [
     category: "Nature & Culture",
     locationValue: "CN",
     price: 420,
-    imageSrc: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800",
+    imageSrc: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800",
     guestCount: 4,
     roomCount: 1,
     bathroomCount: 0,
@@ -129,7 +129,7 @@ const GUIDE_LISTINGS = [
     category: "Heritage Tour",
     locationValue: "CN",
     price: 365,
-    imageSrc: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800",
+    imageSrc: "https://images.unsplash.com/photo-1513581166391-887a96ddeafd?w=800",
     guestCount: 4,
     roomCount: 1,
     bathroomCount: 0,
@@ -140,7 +140,7 @@ const GUIDE_LISTINGS = [
     category: "City Walk",
     locationValue: "CN",
     price: 245,
-    imageSrc: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800",
+    imageSrc: "https://images.unsplash.com/photo-1534008757030-27299c4371b6?w=800",
     guestCount: 6,
     roomCount: 1,
     bathroomCount: 0,
@@ -219,6 +219,7 @@ async function main() {
         },
       });
       total++;
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
   console.log(`   ✅ Created ${total} reservations\n`);
