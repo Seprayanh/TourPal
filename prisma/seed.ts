@@ -1,14 +1,4 @@
-/**
- * TourPal 数据库种子脚本
- *
- * 放置路径: prisma/seed.ts
- *
- * 运行方法:
- *   npx ts-node prisma/seed.ts
- */
-
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
 
 function randInt(min: number, max: number) {
@@ -24,41 +14,41 @@ function randDateInPastMonths(monthsAgo: number): Date {
 
 const GUIDE_LISTINGS = [
   {
-    title: "北京胡同文化深度漫游",
-    description: "跟随北京本地向导，穿越南锣鼓巷、烟袋斜街等历史胡同，探访四合院民居，品尝正宗北京小吃。全程英语讲解，小班制不超过6人。",
+    title: "Beijing Hutong Cultural Deep Dive",
+    description: "Explore Beijing's ancient alleyways with a local guide. Visit hidden courtyard homes, sample authentic street food like Jianbing and sugar-coated hawthorn, and hear stories passed down through generations. Small groups of 6 or fewer. Fully guided in English.",
     category: "City Walk",
     locationValue: "CN",
     price: 299,
-    imageSrc: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800",
+    imageSrc: "https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?w=800",
     guestCount: 6,
     roomCount: 1,
     bathroomCount: 0,
   },
   {
-    title: "上海外滩夜游与美食探索",
-    description: "从外滩的万国建筑博览到新天地的摩登夜生活，再到弄堂里的本帮菜馆。本地向导带你走遍游客不知道的上海角落。",
+    title: "Shanghai Bund Night Tour & Local Cuisine",
+    description: "From the colonial grandeur of the Bund to the neon-lit lanes of the Former French Concession, your local guide reveals the Shanghai that tourists miss. End the night with hand-picked street eats and craft cocktails.",
     category: "Food Tour",
     locationValue: "CN",
     price: 349,
-    imageSrc: "https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?w=800",
+    imageSrc: "https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?w=800",
     guestCount: 4,
     roomCount: 1,
     bathroomCount: 0,
   },
   {
-    title: "西安城墙骑行与回民街美食",
-    description: "骑上共享单车环绕西安古城墙一圈，俯瞰千年古都全貌。随后走进回民街，品尝羊肉泡馍、Biangbiang面等特色陕西美食。",
+    title: "Xi'an City Wall Cycling & Muslim Quarter Feast",
+    description: "Rent a bike and circle the fully intact Ming Dynasty city wall as the sun rises over Xi'an. Afterwards, dive into the Muslim Quarter for lamb skewers, Biangbiang noodles, and pomegranate juice straight from the press.",
     category: "Heritage Tour",
     locationValue: "CN",
     price: 259,
-    imageSrc: "https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=800",
+    imageSrc: "https://images.unsplash.com/photo-1609674227448-b3d23d85f9c3?w=800",
     guestCount: 8,
     roomCount: 1,
     bathroomCount: 0,
   },
   {
-    title: "成都大熊猫基地与茶馆文化半日游",
-    description: "早晨前往熊猫繁育基地，趁大熊猫最活跃时拍照留念。下午移步人民公园鹤鸣茶社，体验真实的成都慢生活。",
+    title: "Chengdu Giant Panda Base & Tea House Culture",
+    description: "Beat the crowds with an early-morning visit to the Giant Panda Breeding Research Base. Watch pandas at their most playful before heading to a century-old tea house in People's Park for a genuine Chengdu slow-life experience.",
     category: "Nature & Culture",
     locationValue: "CN",
     price: 389,
@@ -68,8 +58,8 @@ const GUIDE_LISTINGS = [
     bathroomCount: 0,
   },
   {
-    title: "广州早茶文化深度体验",
-    description: "广州本地向导带你走进不对外营业的老字号后厨，了解虾饺、肠粉的制作工艺。随后在传统茶楼体验正宗饮茶礼仪。",
+    title: "Guangzhou Dim Sum Morning & Cantonese Kitchen Secrets",
+    description: "Your Guangzhou local takes you behind the scenes of a family-run yum cha restaurant before it opens. Learn the art of folding har gow and cheung fun, then feast on your own creations alongside regulars who have been coming here for decades.",
     category: "Food Tour",
     locationValue: "CN",
     price: 228,
@@ -79,78 +69,145 @@ const GUIDE_LISTINGS = [
     bathroomCount: 0,
   },
   {
-    title: "杭州西湖茶园采茶体验",
-    description: "前往龙井村真正的茶农家，亲手参与龙井茶的采摘与手工炒制。随后乘船游览西湖，在湖光山色中品茗论茶。",
+    title: "Hangzhou West Lake Tea Picking & Boat Ride",
+    description: "Head to a real Longjing tea farm in Longjing Village, pick leaves by hand, and learn the traditional pan-firing technique from a fourth-generation tea farmer. Finish with a sunset boat glide across West Lake.",
     category: "Nature & Culture",
     locationValue: "CN",
     price: 318,
-    imageSrc: "https://images.unsplash.com/photo-1513415277900-a62401e19be4?w=800",
+    imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800",
     guestCount: 4,
+    roomCount: 1,
+    bathroomCount: 0,
+  },
+  {
+    title: "Chongqing Hot Pot Masterclass & Hillside Stroll",
+    description: "Chongqing invented hot pot — let a local prove it. Visit the spice market to select your own peppers and aromatics, then cook a full meal under the guidance of a hotpot chef. Walk off the heat on the illuminated hillside stairways of Hongyadong at night.",
+    category: "Food Tour",
+    locationValue: "CN",
+    price: 278,
+    imageSrc: "https://images.unsplash.com/photo-1555126634-323283e090fa?w=800",
+    guestCount: 6,
+    roomCount: 1,
+    bathroomCount: 0,
+  },
+  {
+    title: "Suzhou Classical Garden & Silk Weaving Workshop",
+    description: "Wander through UNESCO-listed classical gardens with a knowledgeable local art historian. Then visit a working silk factory where craftswomen still operate century-old hand looms, and try weaving a small souvenir to take home.",
+    category: "Heritage Tour",
+    locationValue: "CN",
+    price: 338,
+    imageSrc: "https://images.unsplash.com/photo-1591194725989-32da47d47ef5?w=800",
+    guestCount: 5,
+    roomCount: 1,
+    bathroomCount: 0,
+  },
+  {
+    title: "Guilin Li River Kayak & Karst Village Lunch",
+    description: "Paddle a kayak through the otherworldly karst peaks of the Li River at your own pace, guided by a local outdoor enthusiast. Pull ashore at a Zhuang minority village for a home-cooked lunch of bamboo rice and river fish.",
+    category: "Nature & Culture",
+    locationValue: "CN",
+    price: 420,
+    imageSrc: "https://images.unsplash.com/photo-1537531383496-b5b1a0a0c9c7?w=800",
+    guestCount: 4,
+    roomCount: 1,
+    bathroomCount: 0,
+  },
+  {
+    title: "Chengdu Sichuan Opera & Backstage Makeup Tour",
+    description: "Go backstage at a Sichuan Opera house before the evening show and watch the performers apply their elaborate face paint. Your guide explains the symbolism behind each color and character. Ringside seats included for the face-changing performance.",
+    category: "City Walk",
+    locationValue: "CN",
+    price: 310,
+    imageSrc: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800",
+    guestCount: 8,
+    roomCount: 1,
+    bathroomCount: 0,
+  },
+  {
+    title: "Yunnan Naxi Village Homestay & Dongba Culture",
+    description: "Spend a half-day with a Naxi family in a traditional village outside Lijiang. Learn a few characters of Dongba script — the world's only living pictographic writing system — and join the family for lunch cooked on a wood-fired stove.",
+    category: "Heritage Tour",
+    locationValue: "CN",
+    price: 365,
+    imageSrc: "https://images.unsplash.com/photo-1533903879676-8e8d5d794c50?w=800",
+    guestCount: 4,
+    roomCount: 1,
+    bathroomCount: 0,
+  },
+  {
+    title: "Xiamen Gulangyu Island Music Walk & Coffee Tour",
+    description: "Gulangyu is home to more pianos per capita than anywhere else on earth. Stroll the car-free lanes with a local musician who shares the island's colonial history and introduces you to hidden cafés, indie galleries, and live jazz sessions.",
+    category: "City Walk",
+    locationValue: "CN",
+    price: 245,
+    imageSrc: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800",
+    guestCount: 6,
     roomCount: 1,
     bathroomCount: 0,
   },
 ];
 
 async function main() {
-  console.log("🌱 开始写入 TourPal 演示数据...\n");
+  console.log("🌏 Seeding TourPal demo data...\n");
 
-  console.log("🗑️  清空旧数据...");
+  console.log("🗑️  Clearing old data...");
   await prisma.reservation.deleteMany();
   await prisma.listing.deleteMany();
   await prisma.user.deleteMany();
-  console.log("   完成\n");
+  console.log("   Done\n");
 
-  console.log("👥 创建本地向导账户...");
+  console.log("🧑‍🤝‍🧑 Creating guide accounts...");
   const guideUsers = await Promise.all([
-    prisma.user.create({ data: { name: "王磊 (Leo Wang)", email: "leo.wang@tourpal.guide", image: "https://i.pravatar.cc/150?img=11", createdAt: randDateInPastMonths(6) } }),
-    prisma.user.create({ data: { name: "陈晓雨 (Xiaoyu Chen)", email: "xiaoyu.chen@tourpal.guide", image: "https://i.pravatar.cc/150?img=47", createdAt: randDateInPastMonths(5) } }),
-    prisma.user.create({ data: { name: "张明 (Ming Zhang)", email: "ming.zhang@tourpal.guide", image: "https://i.pravatar.cc/150?img=12", createdAt: randDateInPastMonths(5) } }),
-    prisma.user.create({ data: { name: "刘芳 (Fang Liu)", email: "fang.liu@tourpal.guide", image: "https://i.pravatar.cc/150?img=45", createdAt: randDateInPastMonths(4) } }),
-    prisma.user.create({ data: { name: "赵伟 (Wei Zhao)", email: "wei.zhao@tourpal.guide", image: "https://i.pravatar.cc/150?img=14", createdAt: randDateInPastMonths(3) } }),
-    prisma.user.create({ data: { name: "孙静 (Jing Sun)", email: "jing.sun@tourpal.guide", image: "https://i.pravatar.cc/150?img=49", createdAt: randDateInPastMonths(2) } }),
+    prisma.user.create({ data: { name: "Leo Wang", email: "leo.wang@tourpal.guide", image: "https://i.pravatar.cc/150?img=11", createdAt: randDateInPastMonths(6) } }),
+    prisma.user.create({ data: { name: "Xiaoyu Chen", email: "xiaoyu.chen@tourpal.guide", image: "https://i.pravatar.cc/150?img=47", createdAt: randDateInPastMonths(5) } }),
+    prisma.user.create({ data: { name: "Ming Zhang", email: "ming.zhang@tourpal.guide", image: "https://i.pravatar.cc/150?img=12", createdAt: randDateInPastMonths(5) } }),
+    prisma.user.create({ data: { name: "Fang Liu", email: "fang.liu@tourpal.guide", image: "https://i.pravatar.cc/150?img=45", createdAt: randDateInPastMonths(4) } }),
+    prisma.user.create({ data: { name: "Wei Zhao", email: "wei.zhao@tourpal.guide", image: "https://i.pravatar.cc/150?img=14", createdAt: randDateInPastMonths(3) } }),
+    prisma.user.create({ data: { name: "Jing Sun", email: "jing.sun@tourpal.guide", image: "https://i.pravatar.cc/150?img=49", createdAt: randDateInPastMonths(2) } }),
+    prisma.user.create({ data: { name: "Hao Li", email: "hao.li@tourpal.guide", image: "https://i.pravatar.cc/150?img=15", createdAt: randDateInPastMonths(4) } }),
+    prisma.user.create({ data: { name: "Mei Wu", email: "mei.wu@tourpal.guide", image: "https://i.pravatar.cc/150?img=48", createdAt: randDateInPastMonths(3) } }),
   ]);
-  console.log(`   ✅ 创建了 ${guideUsers.length} 位向导\n`);
+  console.log(`   ✅ Created ${guideUsers.length} guides\n`);
 
-  console.log("🌍 创建游客账户...");
-  const tourist = await prisma.user.create({
-    data: {
-      name: "Alex Johnson",
-      email: "alex.johnson.demo@tourpal.com",
-      image: "https://i.pravatar.cc/150?img=32",
-      createdAt: randDateInPastMonths(3),
-    },
-  });
-  console.log(`   ✅ 创建游客: ${tourist.name}\n`);
+  console.log("🌍 Creating tourist accounts...");
+  const tourists = await Promise.all([
+    prisma.user.create({ data: { name: "Alex Johnson", email: "alex.johnson.demo@tourpal.com", image: "https://i.pravatar.cc/150?img=32", createdAt: randDateInPastMonths(6) } }),
+    prisma.user.create({ data: { name: "Emma Wilson", email: "emma.wilson.demo@tourpal.com", image: "https://i.pravatar.cc/150?img=44", createdAt: randDateInPastMonths(5) } }),
+    prisma.user.create({ data: { name: "James Miller", email: "james.miller.demo@tourpal.com", image: "https://i.pravatar.cc/150?img=33", createdAt: randDateInPastMonths(5) } }),
+    prisma.user.create({ data: { name: "Sophie Martin", email: "sophie.martin.demo@tourpal.com", image: "https://i.pravatar.cc/150?img=46", createdAt: randDateInPastMonths(4) } }),
+    prisma.user.create({ data: { name: "Lucas Brown", email: "lucas.brown.demo@tourpal.com", image: "https://i.pravatar.cc/150?img=35", createdAt: randDateInPastMonths(3) } }),
+    prisma.user.create({ data: { name: "Yuki Tanaka", email: "yuki.tanaka.demo@tourpal.com", image: "https://i.pravatar.cc/150?img=50", createdAt: randDateInPastMonths(2) } }),
+  ]);
+  console.log(`   ✅ Created ${tourists.length} tourists\n`);
 
-  console.log("📍 创建在地体验产品...");
+  console.log("🗺️  Creating experience listings...");
   const listings = await Promise.all(
     GUIDE_LISTINGS.map((data, i) =>
-      prisma.listing.create({ data: { ...data, userId: guideUsers[i].id } })
+      prisma.listing.create({ data: { ...data, userId: guideUsers[i % guideUsers.length].id } })
     )
   );
-  console.log(`   ✅ 创建了 ${listings.length} 个体验产品\n`);
+  console.log(`   ✅ Created ${listings.length} listings\n`);
 
-  console.log("📅 生成历史预订记录（20条，过去6个月递增分布）...");
-
+  console.log("📅 Generating reservation history (45 records, 6-month growth trend)...");
   const reservationConfigs = [
-    { monthsAgo: 6, count: 2 },
-    { monthsAgo: 5, count: 2 },
-    { monthsAgo: 4, count: 3 },
-    { monthsAgo: 3, count: 3 },
-    { monthsAgo: 2, count: 4 },
-    { monthsAgo: 1, count: 6 },
+    { monthsAgo: 6, count: 4 },
+    { monthsAgo: 5, count: 5 },
+    { monthsAgo: 4, count: 7 },
+    { monthsAgo: 3, count: 8 },
+    { monthsAgo: 2, count: 10 },
+    { monthsAgo: 1, count: 11 },
   ];
 
   let total = 0;
   for (const { monthsAgo, count } of reservationConfigs) {
     for (let i = 0; i < count; i++) {
       const listing = listings[randInt(0, listings.length - 1)];
+      const tourist = tourists[randInt(0, tourists.length - 1)];
       const createdAt = randDateInPastMonths(monthsAgo);
       const startDate = new Date(createdAt);
       startDate.setDate(startDate.getDate() + randInt(1, 7));
       const endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + randInt(1, 3));
-
       await prisma.reservation.create({
         data: {
           userId: tourist.id,
@@ -164,14 +221,12 @@ async function main() {
       total++;
     }
   }
-  console.log(`   ✅ 创建了 ${total} 条预订记录\n`);
+  console.log(`   ✅ Created ${total} reservations\n`);
 
-  console.log("═══════════════════════════════════");
-  console.log("✅ 种子数据写入完成！");
-  console.log(`   向导: ${guideUsers.length} 位  |  体验产品: ${listings.length} 个  |  预订: ${total} 条`);
-  console.log("🚀 运行 npm run dev，访问 localhost:3000 查看效果");
+  console.log("✅ Seed complete!");
+  console.log(`   Guides: ${guideUsers.length} | Tourists: ${tourists.length} | Listings: ${listings.length} | Reservations: ${total}`);
 }
 
 main()
-  .catch((e) => { console.error("❌ 出错:", e); process.exit(1); })
+  .catch((e) => { console.error("❌ Error:", e); process.exit(1); })
   .finally(async () => { await prisma.$disconnect(); });
