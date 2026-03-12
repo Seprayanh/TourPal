@@ -14,7 +14,7 @@ import SearchModal from "@/components/modal/search-modal";
 const font = Nunito({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Home Rentals",
+  title: "TourPal",
   description:
     "Vacation Rentals, Cabins, Beach Houses, Unique Homes & Experiences",
 };
