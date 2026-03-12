@@ -43,7 +43,7 @@ const GUIDE_LISTINGS = [
     price: 259,
     imageSrc: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800",
     guestCount: 8,
-    roomCount: 1,
+    roomCount: 2,
     bathroomCount: 0,
   },
   {
@@ -54,7 +54,7 @@ const GUIDE_LISTINGS = [
     price: 389,
     imageSrc: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800",
     guestCount: 5,
-    roomCount: 1,
+    roomCount: 2,
     bathroomCount: 0,
   },
   {
@@ -98,7 +98,7 @@ const GUIDE_LISTINGS = [
     price: 338,
     imageSrc: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800",
     guestCount: 5,
-    roomCount: 1,
+    roomCount: 2,
     bathroomCount: 0,
   },
   {
@@ -109,7 +109,7 @@ const GUIDE_LISTINGS = [
     price: 420,
     imageSrc: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800",
     guestCount: 4,
-    roomCount: 1,
+    roomCount: 2,
     bathroomCount: 0,
   },
   {
