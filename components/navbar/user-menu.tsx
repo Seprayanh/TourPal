@@ -95,9 +95,20 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   }}
                 />
 
-                <hr />
-
-                <MenuItem label="Logout" onClick={() => signOut()} />
+                {currentUser?.email === "suruihan07@gmail.com" && (
+  <>
+    <MenuItem
+      label="Admin Dashboard"
+      onClick={() => {
+        router.push("/admin");
+        setIsOpen(false);
+      }}
+    />
+    <hr />
+  </>
+)}
+<hr />
+<MenuItem label="Logout" onClick={() => signOut()} />
               </React.Fragment>
             ) : (
               <React.Fragment>
