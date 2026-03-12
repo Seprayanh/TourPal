@@ -47,11 +47,10 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           <h3>Hosted by {user?.name}</h3>
           <Avatar src={user?.image} />
         </div>
-
         <div className="flex items-center gap-4 font-light text-neutral-500">
-          <span>{guestCount} guests</span>
-          <span>{roomCount} rooms</span>
-          <span>{bathroomCount} bathrooms</span>
+          <span>👥 Group size: 1–{guestCount}</span>
+          <span>⏱ Duration: {roomCount * 3}h</span>
+          <span>🌐 English guided</span>
         </div>
       </div>
 
