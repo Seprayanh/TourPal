@@ -151,19 +151,14 @@ export default function AdminDashboard() {
             value={stats.totalListings.toLocaleString()} color="emerald"
           />
           <StatCard
-            label="累计预订订单" labelEn="Total Reservations"
-            value={stats.totalReservations.toLocaleString()} color="rose"
-            delta={stats.newReservationsThisMonth} deltaLabel="笔订单"
-          />
-          <StatCard
-            label="订单转化率" labelEn="Booking Conversion Rate"
-            value={
-              stats.totalUsers > 0
-                ? `${((stats.totalReservations / stats.totalUsers) * 100).toFixed(1)}%`
-                : "—"
-            }
-            color="amber"
-          />
+  label="人均预订次数" labelEn="Avg. Bookings per User"
+  value={
+    stats.totalUsers > 0
+      ? `${(stats.totalReservations / stats.totalUsers).toFixed(1)} 次`
+      : "—"
+  }
+  color="amber"
+/>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
