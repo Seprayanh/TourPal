@@ -86,37 +86,48 @@ export async function GET() {
       },
     });
 
-    // 质量指标：评价与 DRE
-    const [allReviews, resolvedDefects, fulfillmentCounts] = await Promise.all([
-      prisma.review.findMany({ select: { rating: true, isDefect: true } }),
-      prisma.review.count({ where: { isDefect: true, resolvedAt: { not: null } } }),
-      prisma.reservation.groupBy({
-        by: ["status"],
-        _count: { status: true },
-      }),
-    ]);
-
-    const totalReviews = allReviews.length;
-    const defectCount = allReviews.filter((r) => r.isDefect).length;
-    const avgRating =
-      totalReviews > 0
-        ? allReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
-        : null;
-    const DRE =
-      defectCount > 0
-        ? Math.round((resolvedDefects / defectCount) * 100)
-        : 100;
-
-    const fulfillmentStats: Record<string, number> = {
-      PENDING: 0,
-      ACCEPTED: 0,
-      IN_PROGRESS: 0,
-      COMPLETED: 0,
-      CANCELLED: 0,
+    // 质量指标：评价与 DRE（需 prisma db push 后才有 Review 集合，否则降级为空数据）
+    let qualityMetrics = {
+      totalReviews: 0,
+      avgRating: null as number | null,
+      defectCount: 0,
+      resolvedDefects: 0,
+      DRE: 100,
+      defectRate: 0,
     };
-    fulfillmentCounts.forEach(({ status, _count }) => {
-      if (status in fulfillmentStats) fulfillmentStats[status] = _count.status;
-    });
+    let fulfillmentStats: Record<string, number> = {
+      PENDING: 0, ACCEPTED: 0, IN_PROGRESS: 0, COMPLETED: 0, CANCELLED: 0,
+    };
+
+    try {
+      const [allReviews, resolvedDefects, fulfillmentCounts] = await Promise.all([
+        (prisma as any).review.findMany({ select: { rating: true, isDefect: true } }),
+        (prisma as any).review.count({ where: { isDefect: true, resolvedAt: { not: null } } }),
+        prisma.reservation.groupBy({ by: ["status"] as any, _count: { status: true } as any }),
+      ]);
+
+      const totalReviews = allReviews.length;
+      const defectCount = allReviews.filter((r: any) => r.isDefect).length;
+      const avgRating =
+        totalReviews > 0
+          ? allReviews.reduce((sum: number, r: any) => sum + r.rating, 0) / totalReviews
+          : null;
+
+      qualityMetrics = {
+        totalReviews,
+        avgRating: avgRating !== null ? Math.round(avgRating * 10) / 10 : null,
+        defectCount,
+        resolvedDefects,
+        DRE: defectCount > 0 ? Math.round((resolvedDefects / defectCount) * 100) : 100,
+        defectRate: totalReviews > 0 ? Math.round((defectCount / totalReviews) * 100) : 0,
+      };
+
+      fulfillmentCounts.forEach(({ status, _count }: any) => {
+        if (status in fulfillmentStats) fulfillmentStats[status] = _count.status;
+      });
+    } catch {
+      // Review 集合尚未创建（schema 未迁移），返回空数据
+    }
 
     return NextResponse.json({
       stats: {
@@ -140,15 +151,7 @@ export async function GET() {
         price: l.price,
         reservationCount: l._count.reservations,
       })),
-      qualityMetrics: {
-        totalReviews,
-        avgRating: avgRating !== null ? Math.round(avgRating * 10) / 10 : null,
-        defectCount,
-        resolvedDefects,
-        DRE,
-        defectRate:
-          totalReviews > 0 ? Math.round((defectCount / totalReviews) * 100) : 0,
-      },
+      qualityMetrics,
       fulfillmentStats,
     });
   } catch (error) {

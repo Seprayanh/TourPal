@@ -3,7 +3,7 @@ import * as React from "react";
 import getCurrentUser from "@/app/actions/get-current-user";
 import getListingById from "@/app/actions/get-listing-by-id";
 import getReservations from "@/app/actions/get-reservations";
-import prisma from "@/lib/prismadb";
+import getReviewableReservation from "@/app/actions/get-reviewable-reservation";
 
 import EmptyState from "@/components/empty-state";
 import IndividualListing from "./individual-listing";
@@ -25,20 +25,10 @@ export default async function IndividualListingPage({
     return <EmptyState />;
   }
 
-  // 查找当前用户是否有可评价的已完成订单（COMPLETED 且尚无 review）
-  let reviewableReservationId: string | null = null;
-  if (currentUser && params.listingId) {
-    const reviewable = await prisma.reservation.findFirst({
-      where: {
-        userId: currentUser.id,
-        listingId: params.listingId,
-        status: "COMPLETED",
-        review: null,
-      },
-      select: { id: true },
-    });
-    reviewableReservationId = reviewable?.id ?? null;
-  }
+  const reviewableReservationId =
+    currentUser && params.listingId
+      ? await getReviewableReservation(currentUser.id, params.listingId)
+      : null;
 
   return (
     <React.Fragment>
