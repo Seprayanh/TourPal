@@ -140,12 +140,11 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
           </div>
         </div>
 
-          <ListingReviews
-            listingId={listing.id}
-            currentUser={currentUser}
-            reviewableReservationId={reviewableReservationId}
-          />
-        </div>
+        <ListingReviews
+          listingId={listing.id}
+          currentUser={currentUser}
+          reviewableReservationId={reviewableReservationId}
+        />
       </div>
     </Container>
   );
