@@ -102,6 +102,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                     setIsOpen(false);
                   }}
                 />
+                <MenuItem
+                  label="向导工单管理"
+                  onClick={() => {
+                    router.push("/guide");
+                    setIsOpen(false);
+                  }}
+                />
 
                 {currentUser?.email === "suruihan07@gmail.com" && (
   <>

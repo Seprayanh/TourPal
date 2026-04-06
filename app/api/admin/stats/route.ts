@@ -1,5 +1,3 @@
-// 放置路径: app/api/admin/stats/route.ts
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 
@@ -88,6 +86,38 @@ export async function GET() {
       },
     });
 
+    // 质量指标：评价与 DRE
+    const [allReviews, resolvedDefects, fulfillmentCounts] = await Promise.all([
+      prisma.review.findMany({ select: { rating: true, isDefect: true } }),
+      prisma.review.count({ where: { isDefect: true, resolvedAt: { not: null } } }),
+      prisma.reservation.groupBy({
+        by: ["status"],
+        _count: { status: true },
+      }),
+    ]);
+
+    const totalReviews = allReviews.length;
+    const defectCount = allReviews.filter((r) => r.isDefect).length;
+    const avgRating =
+      totalReviews > 0
+        ? allReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+        : null;
+    const DRE =
+      defectCount > 0
+        ? Math.round((resolvedDefects / defectCount) * 100)
+        : 100;
+
+    const fulfillmentStats: Record<string, number> = {
+      PENDING: 0,
+      ACCEPTED: 0,
+      IN_PROGRESS: 0,
+      COMPLETED: 0,
+      CANCELLED: 0,
+    };
+    fulfillmentCounts.forEach(({ status, _count }) => {
+      if (status in fulfillmentStats) fulfillmentStats[status] = _count.status;
+    });
+
     return NextResponse.json({
       stats: {
         totalUsers,
@@ -110,6 +140,16 @@ export async function GET() {
         price: l.price,
         reservationCount: l._count.reservations,
       })),
+      qualityMetrics: {
+        totalReviews,
+        avgRating: avgRating !== null ? Math.round(avgRating * 10) / 10 : null,
+        defectCount,
+        resolvedDefects,
+        DRE,
+        defectRate:
+          totalReviews > 0 ? Math.round((defectCount / totalReviews) * 100) : 0,
+      },
+      fulfillmentStats,
     });
   } catch (error) {
     console.error("[ADMIN_STATS_ERROR]", error);

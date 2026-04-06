@@ -1,7 +1,7 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// TODO: 
+// TODO:
 // npx prisma generate
 // npx prisma db push
 
@@ -24,10 +24,12 @@ model User {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   favoriteIds    String[]  @db.ObjectId // user can have many favorites
+  role           String    @default("TOURIST") // TOURIST | GUIDE | ADMIN
 
   accounts     Account[] // user can have many accounts (google, github, etc)
   listings     Listing[] // user can have many listings
   reservations Reservation[] // user can have many reservations
+  reviews      Review[]
 }
 
 model Account {
@@ -65,20 +67,44 @@ model Listing {
   locationValue String
   userId        String   @db.ObjectId
   price         Int
+  duration      Int      @default(4)   // 行程时长（小时）
+  languages     String[] @default([])  // 支持语言列表
+  meetingPoint  String?                // 集合地点
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations Reservation[] // listing can have many reservations
+  reviews      Review[]
 }
 
 model Reservation {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
-  listingId  String   @db.ObjectId
-  startDate  DateTime
-  endDate    DateTime
-  createdAt  DateTime @default(now())
-  totalPrice Int
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String    @db.ObjectId
+  listingId    String    @db.ObjectId
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime  @default(now())
+  totalPrice   Int
+  status       String    @default("PENDING") // PENDING | ACCEPTED | IN_PROGRESS | COMPLETED | CANCELLED
+  checkInTime  DateTime?  // 向导打卡开始时间
+  checkOutTime DateTime?  // 行程结束确认时间
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  review  Review?
+}
+
+model Review {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String    @db.ObjectId
+  listingId     String    @db.ObjectId
+  reservationId String    @unique @db.ObjectId // 一单一评
+  rating        Int       // 1-5 星
+  comment       String?
+  isDefect      Boolean   @default(false) // rating <= 2 时为 true，用于 DRE 计算
+  resolvedAt    DateTime?                  // 投诉被平台处理的时间
+  createdAt     DateTime  @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing     Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
 }
