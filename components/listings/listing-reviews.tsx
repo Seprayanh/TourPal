@@ -19,7 +19,7 @@ interface Review {
 interface ListingReviewsProps {
   listingId: string;
   currentUser?: SafeUser | null;
-  // 当前用户已完成但尚未评价的 reservationId（由父组件计算后传入）
+  // Completed reservation without a review yet (passed from parent)
   reviewableReservationId?: string | null;
 }
 
@@ -93,12 +93,12 @@ const ListingReviews: React.FC<ListingReviewsProps> = ({
         rating,
         comment: comment.trim() || undefined,
       });
-      toast.success("评价提交成功！");
+      toast.success("Review submitted!");
       setComment("");
       setRating(5);
       fetchReviews();
     } catch (err: any) {
-      toast.error(err?.response?.data?.error ?? "提交失败，请重试");
+      toast.error(err?.response?.data?.error ?? "Submission failed. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -111,32 +111,30 @@ const ListingReviews: React.FC<ListingReviewsProps> = ({
 
   return (
     <div className="mt-10 border-t border-gray-100 pt-8">
-      {/* 标题行 */}
       <div className="flex items-center gap-3 mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">游客评价</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Guest Reviews</h2>
         {avgRating !== null && (
           <span className="flex items-center gap-1 text-sm text-gray-600">
             <AiFillStar className="text-amber-400" size={16} />
             <span className="font-medium">{avgRating.toFixed(1)}</span>
-            <span className="text-gray-400">({reviews.length} 条)</span>
+            <span className="text-gray-400">({reviews.length} {reviews.length === 1 ? "review" : "reviews"})</span>
           </span>
         )}
       </div>
 
-      {/* 写评价表单 */}
       {currentUser && reviewableReservationId && (
         <form
           onSubmit={handleSubmit}
           className="bg-gray-50 rounded-xl p-5 mb-8 border border-gray-200"
         >
-          <p className="text-sm font-semibold text-gray-700 mb-3">分享您的行程体验</p>
+          <p className="text-sm font-semibold text-gray-700 mb-3">Share your experience</p>
           <div className="mb-3">
             <StarRating rating={rating} onRate={setRating} />
           </div>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="写下您的感受（选填）"
+            placeholder="Write your thoughts (optional)"
             rows={3}
             className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300"
           />
@@ -145,16 +143,15 @@ const ListingReviews: React.FC<ListingReviewsProps> = ({
             disabled={submitting}
             className="mt-3 px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {submitting ? "提交中…" : "提交评价"}
+            {submitting ? "Submitting…" : "Submit Review"}
           </button>
         </form>
       )}
 
-      {/* 评价列表 */}
       {loading ? (
-        <p className="text-sm text-gray-400">加载中…</p>
+        <p className="text-sm text-gray-400">Loading…</p>
       ) : reviews.length === 0 ? (
-        <p className="text-sm text-gray-400">暂无评价，成为第一个评价的游客吧！</p>
+        <p className="text-sm text-gray-400">No reviews yet — be the first to leave one!</p>
       ) : (
         <div className="space-y-5">
           {reviews.map((review) => (
@@ -164,7 +161,7 @@ const ListingReviews: React.FC<ListingReviewsProps> = ({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={review.user.image}
-                    alt={review.user.name ?? "用户"}
+                    alt={review.user.name ?? "user"}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -176,11 +173,11 @@ const ListingReviews: React.FC<ListingReviewsProps> = ({
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-medium text-gray-800">
-                    {review.user?.name ?? "匿名用户"}
+                    {review.user?.name ?? "Anonymous"}
                   </span>
                   <StarRating rating={review.rating} />
                   <span className="text-xs text-gray-400 ml-auto">
-                    {new Date(review.createdAt).toLocaleDateString("zh-CN")}
+                    {new Date(review.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </span>
                 </div>
                 {review.comment && (

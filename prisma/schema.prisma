@@ -70,6 +70,7 @@ model Listing {
   duration      Int      @default(4)   // 行程时长（小时）
   languages     String[] @default([])  // 支持语言列表
   meetingPoint  String?                // 集合地点
+  timeSlot      String?                // MORNING | AFTERNOON | EVENING
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations Reservation[] // listing can have many reservations
