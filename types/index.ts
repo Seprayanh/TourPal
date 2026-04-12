@@ -6,12 +6,11 @@ export type SafeListing = Omit<Listing, "createdAt"> & {
 
 export type SafeReservation = Omit<
   Reservation,
-  "createdAt" | "startDate" | "endDate" | "listing"
+  "createdAt" | "startDate" | "endDate" | "checkInTime" | "checkOutTime" | "listing"
 > & {
   createdAt: string;
   startDate: string;
   endDate: string;
-  // 履约时间字段（schema 扩展后由 prisma generate 生成）
   checkInTime?: string | null;
   checkOutTime?: string | null;
   listing: SafeListing;
