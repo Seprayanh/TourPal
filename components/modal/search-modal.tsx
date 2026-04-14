@@ -166,7 +166,7 @@ const SearchModal: React.FC = () => {
 
         {/* Budget range */}
         <div>
-          <p className="font-medium text-gray-800 mb-2">Budget (per person, ¥)</p>
+          <p className="font-medium text-gray-800 mb-2">Budget (per person, $)</p>
           <div className="flex items-center gap-3">
             <input
               type="number"
