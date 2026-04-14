@@ -49,7 +49,7 @@ function ActivityRow({ item, index }) {
         <p className="text-xs text-gray-400">{item.userName}</p>
       </div>
       <div className="text-right ml-4 flex-shrink-0">
-        <p className="text-sm font-semibold text-gray-700">¥{item.totalPrice?.toLocaleString()}</p>
+        <p className="text-sm font-semibold text-gray-700">$ {item.totalPrice?.toLocaleString()}</p>
         <p className="text-xs text-gray-400">{date}</p>
       </div>
     </div>
@@ -67,7 +67,7 @@ function ListingRow({ item, index }) {
       </div>
       <div className="text-right ml-4 flex-shrink-0">
         <p className="text-sm font-semibold text-gray-700">{item.reservationCount} 单</p>
-        <p className="text-xs text-gray-400">¥{item.price}/次</p>
+        <p className="text-xs text-gray-400">$ {item.price}/次</p>
       </div>
     </div>
   );

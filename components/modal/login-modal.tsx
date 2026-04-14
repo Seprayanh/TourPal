@@ -36,18 +36,18 @@ const LoginModal = () => {
     },
   });
 
-  // Auto-open and pre-fill email when switching accounts
+  // Pre-fill email when the modal opens for an account switch
   React.useEffect(() => {
+    if (!loginModal.isOpen) return;
     try {
       const pendingEmail = localStorage.getItem(SWITCH_EMAIL_KEY);
       if (pendingEmail) {
         localStorage.removeItem(SWITCH_EMAIL_KEY);
         setValue("email", pendingEmail);
-        loginModal.onOpen();
       }
     } catch {}
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loginModal.isOpen]);
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);

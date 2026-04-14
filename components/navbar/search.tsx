@@ -38,9 +38,9 @@ const Search = () => {
   const preferencesLabel = React.useMemo(() => {
     const parts: string[] = [];
     if (minBudget || maxBudget) {
-      if (minBudget && maxBudget) parts.push(`¥${minBudget}–${maxBudget}`);
-      else if (minBudget) parts.push(`From ¥${minBudget}`);
-      else parts.push(`Up to ¥${maxBudget}`);
+      if (minBudget && maxBudget) parts.push(`$${minBudget}–${maxBudget}`);
+      else if (minBudget) parts.push(`From $${minBudget}`);
+      else parts.push(`Up to $${maxBudget}`);
     }
     if (languages) {
       const langs = languages.split(",");
