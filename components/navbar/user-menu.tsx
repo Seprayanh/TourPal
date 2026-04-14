@@ -10,6 +10,7 @@ import { SafeUser } from "@/types";
 import useRegisterModal from "@/hooks/use-register-modal";
 import useLoginModal from "@/hooks/use-login-modal";
 import useRentModal from "@/hooks/use-rent-modal";
+import { useSavedAccounts, getDisplayRole, SWITCH_EMAIL_KEY } from "@/hooks/use-saved-accounts";
 
 import Avatar from "@/components/avatar";
 import MenuItem from "@/components/navbar/menu-item";
@@ -29,6 +30,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
   const isGuide = currentUser?.role === "GUIDE";
   const isTourist = !currentUser || currentUser.role === "TOURIST";
   const isAdmin = currentUser?.email === "suruihan07@gmail.com";
+
+  const { otherAccounts, removeAccount } = useSavedAccounts(currentUser);
+
+  const handleSwitchAccount = React.useCallback((email: string) => {
+    try { localStorage.setItem(SWITCH_EMAIL_KEY, email); } catch {}
+    setIsOpen(false);
+    signOut({ callbackUrl: "/" });
+  }, []);
 
   const onRent = React.useCallback(() => {
     if (!currentUser) {
@@ -82,9 +91,52 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                     {currentUser.email}
                   </p>
                   <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
-                    {isGuide ? "导游" : "Tourist"}
+                    {isAdmin ? "Admin" : isGuide ? "Guide" : "Tourist"}
                   </span>
                 </div>
+
+                {/* ── Account switcher ── */}
+                {otherAccounts.length > 0 && (
+                  <div className="border-b border-gray-100">
+                    <p className="px-4 pt-2 pb-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
+                      Other accounts
+                    </p>
+                    {otherAccounts.map((account) => (
+                      <div
+                        key={account.email}
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleSwitchAccount(account.email)}
+                      >
+                        <Avatar src={account.image} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-gray-800 truncate">
+                            {account.name ?? account.email}
+                          </p>
+                          <span className="text-xs px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                            {getDisplayRole(account)}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          aria-label="Remove account"
+                          onClick={(e) => { e.stopPropagation(); removeAccount(account.email); }}
+                          className="text-gray-300 hover:text-gray-500 text-lg leading-none"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    <div
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 cursor-pointer"
+                      onClick={() => { setIsOpen(false); loginModal.onOpen(); }}
+                    >
+                      <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500">
+                        +
+                      </div>
+                      <span className="text-xs text-gray-600">Add another account</span>
+                    </div>
+                  </div>
+                )}
 
                 {/* ── TOURIST menu items ── */}
                 {isTourist && (

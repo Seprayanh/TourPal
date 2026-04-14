@@ -11,6 +11,7 @@ import { signIn } from "next-auth/react";
 
 import useRegisterModal from "@/hooks/use-register-modal";
 import useLoginModal from "@/hooks/use-login-modal";
+import { SWITCH_EMAIL_KEY } from "@/hooks/use-saved-accounts";
 
 import Modal from "./modal";
 import Heading from "@/components/heading";
@@ -26,6 +27,7 @@ const LoginModal = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
@@ -33,6 +35,19 @@ const LoginModal = () => {
       password: "",
     },
   });
+
+  // Auto-open and pre-fill email when switching accounts
+  React.useEffect(() => {
+    try {
+      const pendingEmail = localStorage.getItem(SWITCH_EMAIL_KEY);
+      if (pendingEmail) {
+        localStorage.removeItem(SWITCH_EMAIL_KEY);
+        setValue("email", pendingEmail);
+        loginModal.onOpen();
+      }
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
