@@ -126,7 +126,7 @@ export default function AdminDashboard() {
     );
   }
 
-  const { stats, chartData, recentActivity, topListings } = data;
+  const { stats, chartData, recentActivity, topListings, qualityMetrics, fulfillmentStats } = data;
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-16">
@@ -140,7 +140,8 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        {/* 基础运营指标 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
           <StatCard
             label="累计注册用户" labelEn="Total Registered Users"
             value={stats.totalUsers.toLocaleString()} color="indigo"
@@ -151,14 +152,40 @@ export default function AdminDashboard() {
             value={stats.totalListings.toLocaleString()} color="emerald"
           />
           <StatCard
-  label="人均预订次数" labelEn="Avg. Bookings per User"
-  value={
-    stats.totalUsers > 0
-      ? `${(stats.totalReservations / stats.totalUsers).toFixed(1)} 次`
-      : "—"
-  }
-  color="amber"
-/>
+            label="人均预订次数" labelEn="Avg. Bookings per User"
+            value={
+              stats.totalUsers > 0
+                ? `${(stats.totalReservations / stats.totalUsers).toFixed(1)} 次`
+                : "—"
+            }
+            color="amber"
+          />
+        </div>
+
+        {/* 质量指标 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          <StatCard
+            label="平均评分" labelEn="Avg. Rating"
+            value={qualityMetrics?.avgRating != null ? `${qualityMetrics.avgRating} ★` : "暂无数据"}
+            color="amber"
+          />
+          <StatCard
+            label="总评价数" labelEn="Total Reviews"
+            value={qualityMetrics?.totalReviews?.toLocaleString() ?? "0"}
+            color="indigo"
+          />
+          <StatCard
+            label="差评率" labelEn="Defect Rate"
+            value={qualityMetrics?.totalReviews > 0 ? `${qualityMetrics.defectRate}%` : "—"}
+            color="rose"
+            delta={qualityMetrics?.defectCount} deltaLabel="条差评（评分 ≤ 2）"
+          />
+          <StatCard
+            label="缺陷消除效率 DRE" labelEn="Defect Removal Efficiency"
+            value={`${qualityMetrics?.DRE ?? 100}%`}
+            color="emerald"
+            delta={qualityMetrics?.resolvedDefects} deltaLabel="条差评已处理"
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
@@ -201,6 +228,28 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
+
+        {/* 履约状态分布 */}
+        {fulfillmentStats && (
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-5">
+            <h2 className="text-base font-semibold text-gray-800 mb-1">履约状态分布</h2>
+            <p className="text-xs text-gray-400 mb-5">Work Order Status Distribution · 向导工单各阶段数量</p>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+              {[
+                { key: "PENDING",     label: "待接单",  color: "bg-yellow-100 text-yellow-700" },
+                { key: "ACCEPTED",    label: "已接单",  color: "bg-blue-100 text-blue-700" },
+                { key: "IN_PROGRESS", label: "进行中",  color: "bg-indigo-100 text-indigo-700" },
+                { key: "COMPLETED",   label: "已完成",  color: "bg-green-100 text-green-700" },
+                { key: "CANCELLED",   label: "已取消",  color: "bg-gray-100 text-gray-500" },
+              ].map(({ key, label, color }) => (
+                <div key={key} className={`rounded-lg px-4 py-3 text-center ${color}`}>
+                  <p className="text-2xl font-semibold">{fulfillmentStats[key] ?? 0}</p>
+                  <p className="text-xs mt-1 font-medium">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
           <h2 className="text-base font-semibold text-gray-800 mb-1">最近预订记录</h2>

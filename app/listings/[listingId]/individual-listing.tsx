@@ -15,6 +15,7 @@ import Container from "@/components/container";
 import ListingHead from "@/components/listings/listing-head";
 import ListingInfo from "@/components/listings/listing-info";
 import ListingReservation from "@/components/listings/listing-reservation";
+import ListingReviews from "@/components/listings/listing-reviews";
 
 const INITIAL_DATE_RANGE = {
   startDate: new Date(),
@@ -28,12 +29,14 @@ interface IndividualListingProps {
     user: SafeUser;
   };
   reservations?: SafeReservation[];
+  reviewableReservationId?: string | null;
 }
 
 const IndividualListing: React.FC<IndividualListingProps> = ({
   currentUser,
   listing,
   reservations = [],
+  reviewableReservationId,
 }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [totalPrice, setTotalPrice] = React.useState(listing.price);
@@ -136,6 +139,12 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
             </div>
           </div>
         </div>
+
+        <ListingReviews
+          listingId={listing.id}
+          currentUser={currentUser}
+          reviewableReservationId={reviewableReservationId}
+        />
       </div>
     </Container>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Range } from "react-date-range";
 import queryString from "query-string";
@@ -11,147 +10,119 @@ import useSearchModal from "@/hooks/use-search-modal";
 
 import Modal from "./modal";
 import Heading from "@/components/heading";
-import CountrySelect, {
-  CountrySelectValue,
-} from "@/components/inputs/country-select";
 import Calendar from "@/components/inputs/calendar";
 import Counter from "@/components/inputs/counter";
 
 enum STEPS {
-  LOCATION = 0,
+  GUESTS = 0,
   DATE = 1,
-  INFO = 2,
+  PREFERENCES = 2,
 }
 
-interface SearchModalProps {}
+const TIME_SLOTS = [
+  { value: "MORNING",   label: "Morning",   icon: "🌅", sub: "6 AM – 12 PM" },
+  { value: "AFTERNOON", label: "Afternoon", icon: "☀️", sub: "12 PM – 6 PM" },
+  { value: "EVENING",   label: "Evening",   icon: "🌙", sub: "6 PM – 10 PM" },
+];
 
-const SearchModal: React.FC<SearchModalProps> = ({}) => {
+const LANGUAGES = [
+  "English", "French", "Spanish", "Italian", "German",
+  "Japanese", "Korean", "Arabic", "Portuguese", "Russian",
+];
+
+const SearchModal: React.FC = () => {
   const router = useRouter();
   const params = useSearchParams();
-
   const searchModal = useSearchModal();
-
   const { initialStep } = searchModal;
-const [step, setStep] = React.useState(STEPS.LOCATION);
 
-React.useEffect(() => {
-  setStep(initialStep);
-}, [initialStep]);
-  const [location, setLocation] = React.useState<CountrySelectValue>();
+  const [step, setStep] = React.useState(STEPS.GUESTS);
+
+  React.useEffect(() => {
+    setStep(initialStep);
+  }, [initialStep]);
+
   const [guestCount, setGuestCount] = React.useState(1);
-  const [roomCount, setRoomCount] = React.useState(1);
-  const [bathroomCount, setBathroomCount] = React.useState(1);
   const [dateRange, setDateRange] = React.useState<Range>({
     key: "selection",
     startDate: new Date(),
     endDate: new Date(),
   });
+  const [timeSlot, setTimeSlot] = React.useState<string>("");
+  const [minBudget, setMinBudget] = React.useState<string>("");
+  const [maxBudget, setMaxBudget] = React.useState<string>("");
+  const [selectedLanguages, setSelectedLanguages] = React.useState<string[]>([]);
 
-  const Map = React.useMemo(
-    () => dynamic(() => import("@/components/map"), { ssr: false }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [location]
-  );
+  const toggleLanguage = (lang: string) => {
+    setSelectedLanguages((prev) =>
+      prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang]
+    );
+  };
 
-  const onBack = React.useCallback(() => {
-    setStep((value) => value - 1);
-  }, []);
-
-  const onNext = React.useCallback(() => {
-    setStep((value) => value + 1);
-  }, []);
+  const onBack = React.useCallback(() => setStep((v) => v - 1), []);
+  const onNext = React.useCallback(() => setStep((v) => v + 1), []);
 
   const onSubmit = React.useCallback(async () => {
-    if (step !== STEPS.INFO) {
-      return onNext();
-    }
+    if (step !== STEPS.PREFERENCES) return onNext();
 
-    let currentQuery = {};
+    let currentQuery: Record<string, any> = {};
+    if (params) currentQuery = queryString.parse(params.toString());
 
-    if (params) {
-      currentQuery = queryString.parse(params.toString());
-    }
-
-    const updatedQuery: any = {
+    const updatedQuery: Record<string, any> = {
       ...currentQuery,
-      locationValue: location?.value,
       guestCount,
-      roomCount,
-      bathroomCount,
     };
 
-    if (dateRange.startDate) {
-      updatedQuery.startDate = formatISO(dateRange.startDate);
-    }
-
-    if (dateRange.endDate) {
-      updatedQuery.endDate = formatISO(dateRange.endDate);
-    }
+    if (dateRange.startDate) updatedQuery.startDate = formatISO(dateRange.startDate);
+    if (dateRange.endDate) updatedQuery.endDate = formatISO(dateRange.endDate);
+    if (timeSlot) updatedQuery.timeSlot = timeSlot;
+    if (minBudget) updatedQuery.minBudget = minBudget;
+    if (maxBudget) updatedQuery.maxBudget = maxBudget;
+    if (selectedLanguages.length > 0) updatedQuery.languages = selectedLanguages.join(",");
 
     const url = queryString.stringifyUrl(
-      {
-        url: "/",
-        query: updatedQuery,
-      },
-      {
-        skipNull: true,
-      }
+      { url: "/", query: updatedQuery },
+      { skipNull: true, skipEmptyString: true }
     );
 
-    setStep(STEPS.LOCATION);
+    setStep(STEPS.GUESTS);
     searchModal.onClose();
-
     router.push(url);
-  }, [
-    step,
-    onNext,
-    location,
-    guestCount,
-    roomCount,
-    bathroomCount,
-    dateRange,
-    params,
-    router,
-    searchModal,
-  ]);
+  }, [step, onNext, guestCount, dateRange, timeSlot, minBudget, maxBudget, selectedLanguages, params, router, searchModal]);
 
   const actionLabel = React.useMemo(() => {
-    if (step === STEPS.INFO) {
-      return "Search";
-    }
-
+    if (step === STEPS.PREFERENCES) return "Search";
     return "Next";
   }, [step]);
 
   const secondaryActionLabel = React.useMemo(() => {
-    if (step === STEPS.LOCATION) {
-      return undefined;
-    }
-
+    if (step === STEPS.GUESTS) return undefined;
     return "Back";
   }, [step]);
 
+  // Step 0: Guest count
   let bodyContent = (
     <div className="flex flex-col gap-8">
       <Heading
-        title="Where are you going?"
-        subtitle="Find the perfect place to stay, for every getaway."
+        title="How many guests?"
+        subtitle="Choose the number of people joining this experience."
       />
-      <CountrySelect
-        value={location}
-        onChange={(value) => setLocation(value as CountrySelectValue)}
+      <Counter
+        title="Guests"
+        subtitle="How many tourists are in your group?"
+        value={guestCount}
+        onChange={setGuestCount}
       />
-      <hr />
-      <Map center={location?.latlng} />
     </div>
   );
 
+  // Step 1: Dates
   if (step === STEPS.DATE) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Add dates"
-          subtitle="Add your travel dates for exact pricing"
+          title="When are you visiting?"
+          subtitle="Pick your preferred travel dates."
         />
         <Calendar
           value={dateRange}
@@ -161,31 +132,82 @@ React.useEffect(() => {
     );
   }
 
-  if (step === STEPS.INFO) {
+  // Step 2: Preferences
+  if (step === STEPS.PREFERENCES) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-6">
         <Heading
-          title="More information"
-          subtitle="Add more information about your stay"
+          title="Your preferences"
+          subtitle="Help us find the perfect experience for you."
         />
-        <Counter
-          title="Guests"
-          subtitle="How many guests?"
-          value={guestCount}
-          onChange={(value) => setGuestCount(value)}
-        />
-        <Counter
-          title="Rooms"
-          subtitle="How many rooms do you need?"
-          value={roomCount}
-          onChange={(value) => setRoomCount(value)}
-        />
-        <Counter
-          title="Bathrooms"
-          subtitle="How many bathrooms do you need?"
-          value={bathroomCount}
-          onChange={(value) => setBathroomCount(value)}
-        />
+
+        {/* Time of day */}
+        <div>
+          <p className="font-medium text-gray-800 mb-2">Preferred time of day</p>
+          <div className="grid grid-cols-3 gap-3">
+            {TIME_SLOTS.map((slot) => (
+              <button
+                key={slot.value}
+                type="button"
+                onClick={() => setTimeSlot(timeSlot === slot.value ? "" : slot.value)}
+                className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all text-center ${
+                  timeSlot === slot.value
+                    ? "border-indigo-500 bg-indigo-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                <span className="text-2xl mb-1">{slot.icon}</span>
+                <span className="text-sm font-semibold text-gray-700">{slot.label}</span>
+                <span className="text-xs text-gray-400">{slot.sub}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Budget range */}
+        <div>
+          <p className="font-medium text-gray-800 mb-2">Budget (per person, ¥)</p>
+          <div className="flex items-center gap-3">
+            <input
+              type="number"
+              min={0}
+              placeholder="Min"
+              value={minBudget}
+              onChange={(e) => setMinBudget(e.target.value)}
+              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            />
+            <span className="text-gray-400">–</span>
+            <input
+              type="number"
+              min={0}
+              placeholder="Max"
+              value={maxBudget}
+              onChange={(e) => setMaxBudget(e.target.value)}
+              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            />
+          </div>
+        </div>
+
+        {/* Languages */}
+        <div>
+          <p className="font-medium text-gray-800 mb-2">Guide speaks…</p>
+          <div className="flex flex-wrap gap-2">
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => toggleLanguage(lang)}
+                className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
+                  selectedLanguages.includes(lang)
+                    ? "border-indigo-500 bg-indigo-500 text-white"
+                    : "border-gray-200 text-gray-700 hover:border-gray-400"
+                }`}
+              >
+                {lang}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -195,10 +217,10 @@ React.useEffect(() => {
       isOpen={searchModal.isOpen}
       onClose={searchModal.onClose}
       onSubmit={onSubmit}
-      title="Filters"
+      title="Find your experience"
       actionLabel={actionLabel}
       secondaryActionLabel={secondaryActionLabel}
-      secondaryAction={step === STEPS.LOCATION ? undefined : onBack}
+      secondaryAction={step === STEPS.GUESTS ? undefined : onBack}
       body={bodyContent}
     />
   );
