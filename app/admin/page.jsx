@@ -1,11 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import axios from "axios";
-
-const ADMIN_EMAIL = "suruihan07@gmail.com";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer,
@@ -94,22 +90,11 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 export default function AdminDashboard() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Guard: non-admin users are redirected to home immediately
   useEffect(() => {
-    if (status === "loading") return;
-    if (!session || session.user?.email !== ADMIN_EMAIL) {
-      router.replace("/");
-    }
-  }, [status, session, router]);
-
-  useEffect(() => {
-    if (status !== "authenticated" || session?.user?.email !== ADMIN_EMAIL) return;
     axios.get("/api/admin/stats")
       .then((res) => setData(res.data))
       .catch((err) => {
@@ -117,8 +102,7 @@ export default function AdminDashboard() {
         setError("无法加载数据，请检查数据库连接或稍后重试。");
       })
       .finally(() => setLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  }, []);
 
   if (loading) {
     return (
