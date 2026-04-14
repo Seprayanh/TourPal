@@ -7,6 +7,7 @@ import Logo from "@/components/navbar/logo";
 import Search from "@/components/navbar/search";
 import UserMenu from "@/components/navbar/user-menu";
 import Categories from "@/components/navbar/categories";
+import NotificationBell from "@/components/notification-bell";
 
 interface NavbarProps {
   currentUser?: SafeUser | null;
@@ -20,6 +21,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
           <div className="flex items-center justify-between gap-3 md:gap-0">
             <Logo />
             <Search />
+            <NotificationBell currentUser={currentUser} />
             <UserMenu currentUser={currentUser} />
           </div>
         </Container>

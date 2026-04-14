@@ -26,10 +26,11 @@ model User {
   favoriteIds    String[]  @db.ObjectId // user can have many favorites
   role           String    @default("TOURIST") // TOURIST | GUIDE | ADMIN
 
-  accounts     Account[] // user can have many accounts (google, github, etc)
-  listings     Listing[] // user can have many listings
-  reservations Reservation[] // user can have many reservations
-  reviews      Review[]
+  accounts      Account[] // user can have many accounts (google, github, etc)
+  listings      Listing[] // user can have many listings
+  reservations  Reservation[] // user can have many reservations
+  reviews       Review[]
+  notifications Notification[]
 }
 
 model Account {
@@ -108,4 +109,16 @@ model Review {
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing     Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
   reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  type          String   // RESERVATION_ACCEPTED | TOUR_STARTED | TOUR_COMPLETED | RESERVATION_CANCELLED
+  message       String
+  isRead        Boolean  @default(false)
+  reservationId String?
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

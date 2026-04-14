@@ -8,6 +8,29 @@ interface ImageUploadProps {
   onChange: (value: string) => void;
 }
 
+async function compressImage(file: File, maxPx: number, quality: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { reject(new Error("Canvas not supported")); return; }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = reject;
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = React.useState(false);
@@ -19,20 +42,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
 
       setIsUploading(true);
       try {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!res.ok) throw new Error("Upload failed");
-
-        const data = await res.json();
-        onChange(data.url);
+        const dataUrl = await compressImage(file, 800, 0.8);
+        onChange(dataUrl);
       } catch {
-        alert("Upload failed. Please try again.");
+        alert("Image processing failed. Please try again.");
       } finally {
         setIsUploading(false);
       }
@@ -56,7 +69,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
       {isUploading ? (
         <div className="flex flex-col items-center gap-2">
           <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
-          <span className="text-sm text-gray-500">Uploading…</span>
+          <span className="text-sm text-gray-500">Processing…</span>
         </div>
       ) : (
         <>

@@ -103,7 +103,7 @@ const WorkOrders: React.FC<WorkOrdersProps> = ({ reservations, currentUser }) =>
                     行程日期：{startDate} — {endDate}
                   </p>
                   <p className="text-sm text-gray-500">
-                    费用：<span className="font-medium text-gray-700">¥{reservation.totalPrice.toLocaleString()}</span>
+                    费用：<span className="font-medium text-gray-700">$ {reservation.totalPrice.toLocaleString()}</span>
                   </p>
                   {reservation.checkInTime && (
                     <p className="text-xs text-gray-400 mt-1">
