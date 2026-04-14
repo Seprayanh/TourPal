@@ -23,6 +23,9 @@ const LoginModal = () => {
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = React.useState(false);
+  // Track whether this login is an account-switch so we can navigate away
+  // from any admin-only page the previous user was viewing.
+  const isSwitchRef = React.useRef(false);
 
   const {
     register,
@@ -44,6 +47,9 @@ const LoginModal = () => {
       if (pendingEmail) {
         localStorage.removeItem(SWITCH_EMAIL_KEY);
         setValue("email", pendingEmail);
+        isSwitchRef.current = true;
+      } else {
+        isSwitchRef.current = false;
       }
     } catch {}
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,8 +66,13 @@ const LoginModal = () => {
 
       if (callback?.ok) {
         toast.success("Logged in successfully");
-        router.refresh();
         loginModal.onClose();
+        if (isSwitchRef.current) {
+          isSwitchRef.current = false;
+          router.push("/");
+        } else {
+          router.refresh();
+        }
       }
 
       if (callback?.error) {
