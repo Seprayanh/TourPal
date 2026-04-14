@@ -47,8 +47,9 @@ const RentModal = () => {
       category: "",
       location: null,
       guestCount: 1,
-      roomCount: 1,
-      bathroomCount: 1,
+      duration: 4,
+      timeSlot: "",
+      languages: [] as string[],
       imageSrc: "",
     },
   });
@@ -56,9 +57,29 @@ const RentModal = () => {
   const category = watch("category");
   const location = watch("location");
   const guestCount = watch("guestCount");
-  const roomCount = watch("roomCount");
-  const bathroomCount = watch("bathroomCount");
+  const duration = watch("duration");
+  const timeSlot = watch("timeSlot");
+  const languages = watch("languages") as string[];
   const imageSrc = watch("imageSrc");
+
+  const TIME_SLOTS = [
+    { value: "MORNING",   label: "Morning",   sub: "6 AM – 12 PM" },
+    { value: "AFTERNOON", label: "Afternoon", sub: "12 PM – 6 PM" },
+    { value: "EVENING",   label: "Evening",   sub: "6 PM – 10 PM" },
+  ];
+
+  const GUIDE_LANGUAGES = [
+    "English", "Chinese", "French", "Spanish", "Italian",
+    "German", "Japanese", "Korean", "Arabic", "Portuguese",
+  ];
+
+  const toggleLanguage = (lang: string) => {
+    const current: string[] = languages ?? [];
+    const updated = current.includes(lang)
+      ? current.filter((l) => l !== lang)
+      : [...current, lang];
+    setCustomValue("languages", updated);
+  };
 
   const Map = React.useMemo(
     () => dynamic(() => import("@/components/map"), { ssr: false }),
@@ -155,32 +176,75 @@ const RentModal = () => {
 
   if (step === STEPS.INFO) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-6">
         <Heading
-          title="Let's get some info about your place"
-          subtitle="What amenities do you offer?"
+          title="Tell us about your experience"
+          subtitle="Help tourists find the perfect tour."
         />
 
+        {/* Group size */}
         <Counter
-          title="Guests"
-          subtitle="How many guests do you allow?"
+          title="Max Group Size"
+          subtitle="How many participants can join at once?"
           value={guestCount}
           onChange={(value) => setCustomValue("guestCount", value)}
         />
         <hr />
+
+        {/* Duration */}
         <Counter
-          title="Rooms"
-          subtitle="How many rooms do you have?"
-          value={roomCount}
-          onChange={(value) => setCustomValue("roomCount", value)}
+          title="Duration (hours)"
+          subtitle="How long does this experience last?"
+          value={duration}
+          onChange={(value) => setCustomValue("duration", value)}
         />
         <hr />
-        <Counter
-          title="Bathrooms"
-          subtitle="How many bathrooms do you have?"
-          value={bathroomCount}
-          onChange={(value) => setCustomValue("bathroomCount", value)}
-        />
+
+        {/* Time of day */}
+        <div>
+          <p className="font-medium text-gray-800 mb-2">Available time of day</p>
+          <div className="grid grid-cols-3 gap-3">
+            {TIME_SLOTS.map((slot) => (
+              <button
+                key={slot.value}
+                type="button"
+                onClick={() =>
+                  setCustomValue("timeSlot", timeSlot === slot.value ? "" : slot.value)
+                }
+                className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all text-center ${
+                  timeSlot === slot.value
+                    ? "border-black bg-gray-50"
+                    : "border-gray-200 hover:border-gray-400"
+                }`}
+              >
+                <span className="text-sm font-semibold text-gray-700">{slot.label}</span>
+                <span className="text-xs text-gray-400">{slot.sub}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <hr />
+
+        {/* Languages */}
+        <div>
+          <p className="font-medium text-gray-800 mb-2">Languages you speak</p>
+          <div className="flex flex-wrap gap-2">
+            {GUIDE_LANGUAGES.map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => toggleLanguage(lang)}
+                className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
+                  (languages ?? []).includes(lang)
+                    ? "border-black bg-black text-white"
+                    : "border-gray-200 text-gray-700 hover:border-gray-400"
+                }`}
+              >
+                {lang}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

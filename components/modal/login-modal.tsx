@@ -69,7 +69,8 @@ const LoginModal = () => {
         loginModal.onClose();
         if (isSwitchRef.current) {
           isSwitchRef.current = false;
-          router.push("/");
+          // Hard reload ensures the server component re-reads the new session
+          window.location.href = "/";
         } else {
           router.refresh();
         }
