@@ -8,6 +8,7 @@ export interface NotificationItem {
   message: string;
   isRead: boolean;
   reservationId?: string | null;
+  listingId?: string | null;
   createdAt: string;
 }
 

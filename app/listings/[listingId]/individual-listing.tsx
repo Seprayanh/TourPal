@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { differenceInCalendarDays, eachDayOfInterval } from "date-fns";
 import { Range } from "react-date-range";
 import { toast } from "react-hot-toast";
@@ -42,7 +42,19 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
   const [totalPrice, setTotalPrice] = React.useState(listing.price);
   const [dateRange, setDateRange] = React.useState<Range>(INITIAL_DATE_RANGE);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const loginModal = useLoginModal();
+  const reviewsRef = React.useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to review section when ?review=1 is in the URL
+  React.useEffect(() => {
+    if (searchParams.get("review") === "1" && reviewsRef.current) {
+      const timer = setTimeout(() => {
+        reviewsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   const disabledDates = React.useMemo(() => {
     let dates: Date[] = [];
@@ -140,11 +152,13 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
           </div>
         </div>
 
-        <ListingReviews
-          listingId={listing.id}
-          currentUser={currentUser}
-          reviewableReservationId={reviewableReservationId}
-        />
+        <div ref={reviewsRef}>
+          <ListingReviews
+            listingId={listing.id}
+            currentUser={currentUser}
+            reviewableReservationId={reviewableReservationId}
+          />
+        </div>
       </div>
     </Container>
   );

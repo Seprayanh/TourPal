@@ -121,7 +121,7 @@ export async function PATCH(
     data: updateData,
   });
 
-  // Create notification for the tourist (not when tourist cancels their own booking)
+  // Create notification for the tourist (not when tourist self-cancels)
   const isOwnerCancelling = action === "cancel" && isGuide;
   const notif = buildNotification(action, reservation.listing.title, isOwnerCancelling);
 
@@ -132,6 +132,7 @@ export async function PATCH(
         type: notif.type,
         message: notif.message,
         reservationId,
+        listingId: reservation.listingId,
       },
     });
   }

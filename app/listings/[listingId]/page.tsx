@@ -31,13 +31,13 @@ export default async function IndividualListingPage({
       : null;
 
   return (
-    <React.Fragment>
+    <React.Suspense fallback={null}>
       <IndividualListing
         listing={listing}
         reservations={reservations}
         currentUser={currentUser}
         reviewableReservationId={reviewableReservationId}
       />
-    </React.Fragment>
+    </React.Suspense>
   );
 }

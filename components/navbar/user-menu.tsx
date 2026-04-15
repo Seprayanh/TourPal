@@ -178,6 +178,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 {isTourist && (
                   <>
                     <MenuItem label="My trips" onClick={() => { router.push("/trips"); setIsOpen(false); }} />
+                    <MenuItem label="My feedback" onClick={() => { router.push("/feedback"); setIsOpen(false); }} />
                     <MenuItem label="My favorites" onClick={() => { router.push("/favorites"); setIsOpen(false); }} />
                     <MenuItem label="My properties" onClick={() => { router.push("/properties"); setIsOpen(false); }} />
                     <MenuItem label="Add a property" onClick={() => { rentModal.onOpen(); setIsOpen(false); }} />
@@ -186,6 +187,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 {isGuide && (
                   <>
                     <MenuItem label="我的工单" onClick={() => { router.push("/guide"); setIsOpen(false); }} />
+                    <MenuItem label="我的评价" onClick={() => { router.push("/guide/reviews"); setIsOpen(false); }} />
                     <MenuItem label="客人预订" onClick={() => { router.push("/reservations"); setIsOpen(false); }} />
                     <MenuItem label="我的体验" onClick={() => { router.push("/properties"); setIsOpen(false); }} />
                     <MenuItem label="发布体验" onClick={() => { rentModal.onOpen(); setIsOpen(false); }} />
