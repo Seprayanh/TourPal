@@ -48,7 +48,7 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
 
   // Auto-scroll to review section when ?review=1 is in the URL
   React.useEffect(() => {
-    if (searchParams.get("review") === "1" && reviewsRef.current) {
+    if (searchParams?.get("review") === "1" && reviewsRef.current) {
       const timer = setTimeout(() => {
         reviewsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 400);
