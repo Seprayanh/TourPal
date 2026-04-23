@@ -14,6 +14,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// ═══════════════════════════════════════════════════
+/// User — 双角色用户模型（对应 WBS 2.3 双边权限配置）
+/// ═══════════════════════════════════════════════════
 model User {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   name           String?
@@ -55,6 +58,10 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+/// ═══════════════════════════════════════════════════
+/// Listing — 在地体验产品（原 Airbnb Listing 二次开发）
+/// 对应 WBS 2.1 核心实体映射改造
+/// ═══════════════════════════════════════════════════
 model Listing {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   title         String
@@ -78,6 +85,11 @@ model Listing {
   reviews      Review[]
 }
 
+/// ═══════════════════════════════════════════════════
+/// Reservation — 预约订单（对应 WBS 2.2 订单流转模型）
+/// 状态机：PENDING→ACCEPTED→IN_PROGRESS→COMPLETED
+///                     ↘ CANCELLED（任意阶段可取消）
+/// ═══════════════════════════════════════════════════
 model Reservation {
   id           String    @id @default(auto()) @map("_id") @db.ObjectId
   userId       String    @db.ObjectId
@@ -95,6 +107,10 @@ model Reservation {
   review  Review?
 }
 
+/// ═══════════════════════════════════════════════════
+/// Review — 评价模型（DRE 指标数据来源）
+/// DRE = 已处理差评数 / 总差评数 × 100%
+/// ═══════════════════════════════════════════════════
 model Review {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   userId        String    @db.ObjectId
