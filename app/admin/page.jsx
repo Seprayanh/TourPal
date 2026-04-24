@@ -279,7 +279,7 @@ export default function AdminDashboard() {
                         <p className="text-sm font-medium text-gray-800 truncate">{r.listingTitle}</p>
                         <p className="text-xs text-gray-400">{r.reviewer}</p>
                         {r.comment && (
-                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">"{r.comment}"</p>
+                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">&ldquo;{r.comment}&rdquo;</p>
                         )}
                       </div>
                       <div className="text-right flex-shrink-0">
