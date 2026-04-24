@@ -68,7 +68,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <div className="relative flex flex-col border-0 rounded-lg shadow-lg w-full bg-white outline-none focus:outline-none">
           {/* Header */}
           <div className="flex items-center justify-center relative p-6 rounded-t border-b-[1px]">
-            <div className="text-lg font-semibold">确认支付</div>
+            <div className="text-lg font-semibold">Confirm Payment</div>
             <button
               onClick={onCancel}
               disabled={isLoading}
@@ -84,9 +84,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
               <MdTimer size={22} className={expired ? "text-red-500" : urgentColor} />
               <div>
-                <p className="text-sm font-medium text-neutral-700">档期锁定倒计时</p>
+                <p className="text-sm font-medium text-neutral-700">Schedule Hold Countdown</p>
                 {expired ? (
-                  <p className="text-sm text-red-500 font-semibold">锁定已超时，请关闭后重新选择日期</p>
+                  <p className="text-sm text-red-500 font-semibold">Hold expired — please close and choose new dates.</p>
                 ) : (
                   <p className={`text-xl font-mono font-bold ${urgentColor}`}>{display}</p>
                 )}
@@ -98,7 +98,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
                 <div className="flex items-center gap-2 text-neutral-600">
                   <MdToken size={20} />
-                  <span className="text-sm">当前 Token 余额</span>
+                  <span className="text-sm">Current Token Balance</span>
                 </div>
                 <span className="font-semibold text-neutral-800">
                   {tokenBalance.toLocaleString()} T
@@ -106,7 +106,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               </div>
 
               <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
-                <span className="text-sm text-neutral-600">本次费用</span>
+                <span className="text-sm text-neutral-600">Amount Due</span>
                 <span className="font-semibold text-neutral-800">
                   {totalPrice.toLocaleString()} T
                 </span>
@@ -115,7 +115,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               <hr />
 
               <div className="flex items-center justify-between px-1">
-                <span className="text-sm font-medium text-neutral-700">支付后余额</span>
+                <span className="text-sm font-medium text-neutral-700">Balance After Payment</span>
                 <span
                   className={`font-bold text-lg ${
                     insufficient ? "text-red-500" : "text-green-600"
@@ -129,24 +129,24 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             {insufficient && !expired && (
               <div className="flex items-start gap-2 p-3 bg-red-50 rounded-lg border border-red-200">
                 <span className="text-red-500 text-sm">
-                  Token 余额不足，当前余额 {tokenBalance} T，需要 {totalPrice} T。
+                  Insufficient balance. You have {tokenBalance.toLocaleString()} T but need {totalPrice.toLocaleString()} T.
                 </span>
               </div>
             )}
 
             <div className="flex items-center gap-2 text-xs text-neutral-400">
               <MdCheckCircle size={14} />
-              <span>平台 Token 为虚拟货币，1 Token = $1，无需绑定真实银行卡</span>
+              <span>Platform Tokens are virtual currency. 1 Token = $1. No real bank card required.</span>
             </div>
           </div>
 
           {/* Footer */}
           <div className="flex flex-col gap-2 p-6 pt-0">
             <div className="flex items-center gap-4 w-full">
-              <Button outline disabled={isLoading} label="取消" onClick={onCancel} />
+              <Button outline disabled={isLoading} label="Cancel" onClick={onCancel} />
               <Button
                 disabled={!canPay}
-                label={isLoading ? "支付中…" : "确认支付"}
+                label={isLoading ? "Processing…" : "Confirm Payment"}
                 onClick={onConfirm}
               />
             </div>

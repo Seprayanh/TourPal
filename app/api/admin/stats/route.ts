@@ -100,10 +100,19 @@ export async function GET() {
     };
 
     try {
-      const [allReviews, resolvedDefects, fulfillmentCounts] = await Promise.all([
+      const [allReviews, resolvedDefects, fulfillmentCounts, recentDefects] = await Promise.all([
         (prisma as any).review.findMany({ select: { rating: true, isDefect: true } }),
         (prisma as any).review.count({ where: { isDefect: true, resolvedAt: { not: null } } }),
         prisma.reservation.groupBy({ by: ["status"] as any, _count: { status: true } as any }),
+        (prisma as any).review.findMany({
+          where: { isDefect: true },
+          take: 10,
+          orderBy: { createdAt: "desc" },
+          include: {
+            user:    { select: { name: true, email: true } },
+            listing: { select: { title: true } },
+          },
+        }),
       ]);
 
       const totalReviews = allReviews.length;
@@ -125,8 +134,21 @@ export async function GET() {
       fulfillmentCounts.forEach(({ status, _count }: any) => {
         if (status in fulfillmentStats) fulfillmentStats[status] = _count.status;
       });
+
+      qualityMetrics = {
+        ...qualityMetrics,
+        recentDefectReviews: recentDefects.map((r: any) => ({
+          id: r.id,
+          rating: r.rating,
+          comment: r.comment ?? "",
+          resolvedAt: r.resolvedAt?.toISOString() ?? null,
+          createdAt: r.createdAt.toISOString(),
+          reviewer: r.user?.name ?? r.user?.email ?? "Guest",
+          listingTitle: r.listing?.title ?? "Unknown",
+        })),
+      } as any;
     } catch {
-      // Review 集合尚未创建（schema 未迁移），返回空数据
+      // Review collection not yet created (schema not migrated), return empty data
     }
 
     return NextResponse.json({
