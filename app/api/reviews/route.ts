@@ -6,7 +6,39 @@ import getCurrentUser from "@/app/actions/get-current-user";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const listingId = searchParams.get("listingId");
+  const authorId  = searchParams.get("authorId");
+  const guideId   = searchParams.get("guideId");
 
+  // Reviews written by a specific tourist
+  if (authorId) {
+    const reviews = await prisma.review.findMany({
+      where: { userId: authorId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        listing: { select: { id: true, title: true, imageSrc: true } },
+      },
+    });
+    return NextResponse.json(reviews);
+  }
+
+  // All reviews for a guide's listings (grouped data returned to client)
+  if (guideId) {
+    const listings = await prisma.listing.findMany({
+      where: { userId: guideId },
+      select: { id: true, title: true, imageSrc: true },
+    });
+    const listingIds = listings.map((l) => l.id);
+    const reviews = await prisma.review.findMany({
+      where: { listingId: { in: listingIds } },
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: { select: { id: true, name: true, image: true } },
+      },
+    });
+    return NextResponse.json({ listings, reviews });
+  }
+
+  // Reviews for a specific listing (original behaviour)
   if (!listingId) {
     return NextResponse.json({ error: "缺少 listingId" }, { status: 400 });
   }

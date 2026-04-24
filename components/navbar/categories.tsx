@@ -1,100 +1,39 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { TbBeach, TbMountain, TbPool } from "react-icons/tb";
-import {
-  GiBarn,
-  GiBoatFishing,
-  GiCactus,
-  GiCastle,
-  GiCaveEntrance,
-  GiForestCamp,
-  GiIsland,
-  GiWindmill,
-} from "react-icons/gi";
-import { FaSkiing } from "react-icons/fa";
-import { BsSnow } from "react-icons/bs";
+import { TbTrees } from "react-icons/tb";
+import { FaLandmark } from "react-icons/fa";
 import { IoDiamond } from "react-icons/io5";
-import { MdOutlineVilla } from "react-icons/md";
+import { MdOutlineRestaurant, MdLocationCity } from "react-icons/md";
 
 import Container from "@/components/container";
 import CategoryBox from "@/components/category-box";
 
 export const categories = [
   {
-    label: "Beach",
-    icon: TbBeach,
-    description: "This property is near a beach!",
+    label: "Food Tour",
+    icon: MdOutlineRestaurant,
+    description: "Taste authentic local cuisine with a guide.",
   },
   {
-    label: "Windmills",
-    icon: GiWindmill,
-    description: "This property has a windmill!",
+    label: "Nature & Culture",
+    icon: TbTrees,
+    description: "Discover nature spots and cultural heritage.",
   },
   {
-    label: "Modern",
-    icon: MdOutlineVilla,
-    description: "Such a modern property!",
+    label: "City Walk",
+    icon: MdLocationCity,
+    description: "Explore the city on foot with a local.",
   },
   {
-    label: "Countryside",
-    icon: TbMountain,
-    description: "This property is in the countryside!",
-  },
-  {
-    label: "Pools",
-    icon: TbPool,
-    description: "This property has an amazing pool!",
-  },
-  {
-    label: "Islands",
-    icon: GiIsland,
-    description: "All you need is an island!",
-  },
-  {
-    label: "Lake",
-    icon: GiBoatFishing,
-    description: "You can enjoy the lake!",
-  },
-  {
-    label: "Skiing",
-    icon: FaSkiing,
-    description: "This property has skiing activities!",
-  },
-  {
-    label: "Castles",
-    icon: GiCastle,
-    description: "Only the kings can stay here!",
-  },
-  {
-    label: "Caves",
-    icon: GiCaveEntrance,
-    description: "This property might be spooooky!",
-  },
-  {
-    label: "Camping",
-    icon: GiForestCamp,
-    description: "This property offers camping activities!",
-  },
-  {
-    label: "Arctic",
-    icon: BsSnow,
-    description: "This property is in the arctic!",
-  },
-  {
-    label: "Desert",
-    icon: GiCactus,
-    description: "This property is in the desert!",
-  },
-  {
-    label: "Barns",
-    icon: GiBarn,
-    description: "This property is in a barn!",
+    label: "Heritage Tour",
+    icon: FaLandmark,
+    description: "Visit landmarks and historical sites.",
   },
   {
     label: "Lux",
     icon: IoDiamond,
-    description: "Nothing but the most luxurious property!",
+    description: "Premium private experiences.",
   },
 ];
 

@@ -17,10 +17,19 @@ export async function POST(request: Request) {
     return NextResponse.error();
   }
 
-  const listingAndReservation = await prisma.listing.update({
-    where: {
-      id: listingId,
-    },
+  // Fetch listing to get guide info for the notification
+  const listing = await prisma.listing.findUnique({
+    where: { id: listingId },
+    select: { userId: true, title: true },
+  });
+
+  if (!listing) {
+    return NextResponse.json({ error: "Listing not found" }, { status: 404 });
+  }
+
+  // Create reservation via nested update (keeps original behaviour)
+  const listingWithReservation = await prisma.listing.update({
+    where: { id: listingId },
     data: {
       reservations: {
         create: {
@@ -31,7 +40,29 @@ export async function POST(request: Request) {
         },
       },
     },
+    include: {
+      reservations: {
+        where: { userId: currentUser.id },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
+    },
   });
 
-  return NextResponse.json(listingAndReservation);
+  const newReservation = listingWithReservation.reservations[0];
+
+  // Notify the guide about the new booking
+  if (listing.userId && newReservation) {
+    await prisma.notification.create({
+      data: {
+        userId: listing.userId,
+        type: "NEW_BOOKING",
+        message: `新订单：游客已预订「${listing.title}」，请及时接单。`,
+        reservationId: newReservation.id,
+        listingId,
+      },
+    });
+  }
+
+  return NextResponse.json(listingWithReservation);
 }

@@ -19,11 +19,14 @@ export async function POST(request: Request) {
       description: body.description,
       imageSrc: body.imageSrc,
       category: body.category,
-      roomCount: body.roomCount,
-      bathroomCount: body.bathroomCount,
-      guestCount: body.guestCount,
+      roomCount: 1,
+      bathroomCount: 1,
+      guestCount: body.guestCount ?? 1,
       locationValue: body.location.value,
       price: parseInt(body.price, 10),
+      duration: body.duration ?? 4,
+      timeSlot: body.timeSlot ?? null,
+      languages: body.languages ?? [],
     },
   });
 

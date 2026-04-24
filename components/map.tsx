@@ -20,11 +20,15 @@ interface MapProps {
   center?: [number, number];
 }
 
-const Map: React.FC<MapProps> = ({ center = [51.505, -0.09] }) => {
+// Default: centre of China
+const CHINA_CENTER: [number, number] = [35.0, 105.0];
+
+const Map: React.FC<MapProps> = ({ center }) => {
+  const mapCenter = center ?? CHINA_CENTER;
   return (
     <MapContainer
-      center={center}
-      zoom={center ? 4 : 2}
+      center={mapCenter}
+      zoom={center ? 7 : 4}
       scrollWheelZoom={false}
       className="h-[35vh] rounded-lg"
     >
@@ -32,7 +36,7 @@ const Map: React.FC<MapProps> = ({ center = [51.505, -0.09] }) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {center && <Marker position={center} />}
+      {center && <Marker position={mapCenter} />}
     </MapContainer>
   );
 };

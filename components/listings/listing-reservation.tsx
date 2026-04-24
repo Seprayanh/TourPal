@@ -28,7 +28,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   return (
     <div className="bg-white rounded-xl border-[1px] border-neutral-200 overflow-hidden">
       <div className="flex items-center gap-1 p-4">
-        <span className="font-semibold text-2xl">€ {price}</span>
+        <span className="font-semibold text-2xl">$ {price}</span>
         <span className="font-light text-neutral-600">/ night</span>
       </div>
 
@@ -44,13 +44,16 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
 
       <div className="flex items-center justify-between p-4 font-semibold text-lg">
         <span>Total</span>
-        <span>€ {totalPrice}</span>
+        <span>$ {totalPrice}</span>
       </div>
 
       <hr />
 
-      <div className="p-4">
-        <Button disabled={disabled} label="Reserve" onClick={onSubmit} />
+      <div className="p-4 space-y-2">
+        <Button disabled={disabled} label="锁定档期并支付" onClick={onSubmit} />
+        <p className="text-xs text-center text-neutral-400">
+          锁定后将有 30 分钟以 Token 完成支付
+        </p>
       </div>
     </div>
   );

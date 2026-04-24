@@ -22,6 +22,38 @@ const VALID_FROM: Record<string, string[]> = {
   cancel:   ["PENDING", "ACCEPTED"],
 };
 
+function buildNotification(
+  action: string,
+  title: string,
+  isOwnerCancelling: boolean
+): { type: string; message: string } | null {
+  if (action === "accept") {
+    return {
+      type: "RESERVATION_ACCEPTED",
+      message: `Your booking for "${title}" has been accepted! Your guide is ready.`,
+    };
+  }
+  if (action === "start") {
+    return {
+      type: "TOUR_STARTED",
+      message: `Your tour "${title}" has started. Have a great experience!`,
+    };
+  }
+  if (action === "complete") {
+    return {
+      type: "TOUR_COMPLETED",
+      message: `Your tour "${title}" is complete. We'd love your feedback!`,
+    };
+  }
+  if (action === "cancel" && isOwnerCancelling) {
+    return {
+      type: "RESERVATION_CANCELLED",
+      message: `Your booking for "${title}" was cancelled by the guide.`,
+    };
+  }
+  return null;
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: IParams }
@@ -47,7 +79,7 @@ export async function PATCH(
 
   const reservation = await prisma.reservation.findUnique({
     where: { id: reservationId },
-    include: { listing: { select: { userId: true } } },
+    include: { listing: { select: { userId: true, title: true } } },
   });
 
   if (!reservation) {
@@ -62,10 +94,10 @@ export async function PATCH(
   }
 
   // cancel 允许游客或向导操作
+  const isGuide = reservation.listing.userId === currentUser.id;
   if (action === "cancel") {
     const isGuest = reservation.userId === currentUser.id;
-    const isOwner = reservation.listing.userId === currentUser.id;
-    if (!isGuest && !isOwner) {
+    if (!isGuest && !isGuide) {
       return NextResponse.json({ error: "无权操作" }, { status: 403 });
     }
   }
@@ -88,6 +120,22 @@ export async function PATCH(
     where: { id: reservationId },
     data: updateData,
   });
+
+  // Create notification for the tourist (not when tourist self-cancels)
+  const isOwnerCancelling = action === "cancel" && isGuide;
+  const notif = buildNotification(action, reservation.listing.title, isOwnerCancelling);
+
+  if (notif) {
+    await prisma.notification.create({
+      data: {
+        userId: reservation.userId,
+        type: notif.type,
+        message: notif.message,
+        reservationId,
+        listingId: reservation.listingId,
+      },
+    });
+  }
 
   return NextResponse.json(updated);
 }
