@@ -49,8 +49,11 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
 
       <hr />
 
-      <div className="p-4">
-        <Button disabled={disabled} label="Reserve" onClick={onSubmit} />
+      <div className="p-4 space-y-2">
+        <Button disabled={disabled} label="锁定档期并支付" onClick={onSubmit} />
+        <p className="text-xs text-center text-neutral-400">
+          锁定后将有 30 分钟以 Token 完成支付
+        </p>
       </div>
     </div>
   );
