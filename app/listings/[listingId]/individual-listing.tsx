@@ -75,7 +75,8 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
     return categories.find((category) => category.label === listing.category);
   }, [listing.category]);
 
-  const onCreateReservation = React.useCallback(async () => {
+  // Create a 30-min schedule hold; other tourists cannot book the same dates during this window
+  const onCreateHold = React.useCallback(async () => {
     if (!currentUser) {
       return loginModal.onOpen();
     }
@@ -83,18 +84,19 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
     setIsLoading(true);
 
     try {
-      await axios.post("/api/reservations", {
+      await axios.post("/api/reservations/hold", {
         totalPrice,
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
         listingId: listing?.id,
       });
 
-      toast.success("Listing reserved!");
+      toast.success("档期已临时锁定（30分钟内有效），请尽快完成支付！");
       setDateRange(INITIAL_DATE_RANGE);
       router.push("/trips");
-    } catch (error) {
-      toast.error((error as Error).message ?? "Something went wrong");
+    } catch (error: any) {
+      const msg = error?.response?.data?.error ?? (error as Error).message ?? "Something went wrong";
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -146,7 +148,7 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
                 disabledDates={disabledDates}
                 disabled={isLoading}
                 onChangeDate={(value) => setDateRange(value)}
-                onSubmit={onCreateReservation}
+                onSubmit={onCreateHold}
               />
             </div>
           </div>
