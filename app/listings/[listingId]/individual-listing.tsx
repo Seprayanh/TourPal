@@ -131,7 +131,7 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
     try {
       await axios.post("/api/payment", { reservationId: pendingReservationId });
 
-      toast.success("支付成功！等待导游接单。");
+      toast.success("Payment successful! Waiting for guide to accept.");
       setShowPayment(false);
       setPendingReservationId(null);
       setHoldExpiresAt(null);
