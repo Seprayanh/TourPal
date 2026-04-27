@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { differenceInCalendarDays, eachDayOfInterval } from "date-fns";
 import { Range } from "react-date-range";
 import { toast } from "react-hot-toast";
@@ -16,6 +16,7 @@ import ListingHead from "@/components/listings/listing-head";
 import ListingInfo from "@/components/listings/listing-info";
 import ListingReservation from "@/components/listings/listing-reservation";
 import ListingReviews from "@/components/listings/listing-reviews";
+import PaymentModal from "@/components/modal/payment-modal";
 
 const INITIAL_DATE_RANGE = {
   startDate: new Date(),
@@ -41,8 +42,37 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
   const [isLoading, setIsLoading] = React.useState(false);
   const [totalPrice, setTotalPrice] = React.useState(listing.price);
   const [dateRange, setDateRange] = React.useState<Range>(INITIAL_DATE_RANGE);
+
+  // Payment modal state
+  const [showPayment, setShowPayment] = React.useState(false);
+  const [pendingReservationId, setPendingReservationId] = React.useState<string | null>(null);
+  const [holdExpiresAt, setHoldExpiresAt] = React.useState<string | null>(null);
+  const [tokenBalance, setTokenBalance] = React.useState(0);
+
   const router = useRouter();
+  const searchParams = useSearchParams();
   const loginModal = useLoginModal();
+  const reviewsRef = React.useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to review section when ?review=1 is in the URL
+  React.useEffect(() => {
+    if (searchParams?.get("review") === "1" && reviewsRef.current) {
+      const timer = setTimeout(() => {
+        reviewsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
+
+  // Fetch token balance right before opening the payment modal
+  const fetchBalance = React.useCallback(async () => {
+    try {
+      const res = await axios.get("/api/user/balance");
+      setTokenBalance(res.data.tokenBalance);
+    } catch {
+      // balance stays 0; payment modal will show insufficient
+    }
+  }, []);
 
   const disabledDates = React.useMemo(() => {
     let dates: Date[] = [];
@@ -63,7 +93,8 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
     return categories.find((category) => category.label === listing.category);
   }, [listing.category]);
 
-  const onCreateReservation = React.useCallback(async () => {
+  // Step 1: lock the guide's slot for 30 min, then open payment modal
+  const onCreateHold = React.useCallback(async () => {
     if (!currentUser) {
       return loginModal.onOpen();
     }
@@ -71,22 +102,61 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
     setIsLoading(true);
 
     try {
-      await axios.post("/api/reservations", {
+      const res = await axios.post("/api/reservations/hold", {
         totalPrice,
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
         listingId: listing?.id,
       });
 
-      toast.success("Listing reserved!");
-      setDateRange(INITIAL_DATE_RANGE);
-      router.push("/trips");
-    } catch (error) {
-      toast.error((error as Error).message ?? "Something went wrong");
+      const { reservation, holdExpiresAt: expires } = res.data;
+      setPendingReservationId(reservation.id);
+      setHoldExpiresAt(expires);
+      await fetchBalance();
+      setShowPayment(true);
+    } catch (error: any) {
+      const msg = error?.response?.data?.error ?? (error as Error).message ?? "Something went wrong";
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
-  }, [currentUser, dateRange, listing?.id, loginModal, router, totalPrice]);
+  }, [currentUser, dateRange, listing?.id, loginModal, totalPrice, fetchBalance]);
+
+  // Step 2: deduct tokens and confirm the reservation
+  const onConfirmPayment = React.useCallback(async () => {
+    if (!pendingReservationId) return;
+
+    setIsLoading(true);
+
+    try {
+      await axios.post("/api/payment", { reservationId: pendingReservationId });
+
+      toast.success("Payment successful! Waiting for guide to accept.");
+      setShowPayment(false);
+      setPendingReservationId(null);
+      setHoldExpiresAt(null);
+      setDateRange(INITIAL_DATE_RANGE);
+      router.push("/trips");
+    } catch (error: any) {
+      const msg = error?.response?.data?.error ?? (error as Error).message ?? "Something went wrong";
+      toast.error(msg);
+      setShowPayment(false);
+      setPendingReservationId(null);
+      setHoldExpiresAt(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [pendingReservationId, router]);
+
+  // Cancel: release the hold immediately so the slot becomes available again
+  const onCancelPayment = React.useCallback(async () => {
+    if (pendingReservationId) {
+      axios.delete(`/api/reservations/${pendingReservationId}`).catch(() => {});
+    }
+    setShowPayment(false);
+    setPendingReservationId(null);
+    setHoldExpiresAt(null);
+  }, [pendingReservationId]);
 
   React.useEffect(() => {
     if (dateRange.startDate && dateRange.endDate) {
@@ -134,18 +204,30 @@ const IndividualListing: React.FC<IndividualListingProps> = ({
                 disabledDates={disabledDates}
                 disabled={isLoading}
                 onChangeDate={(value) => setDateRange(value)}
-                onSubmit={onCreateReservation}
+                onSubmit={onCreateHold}
               />
             </div>
           </div>
         </div>
 
-        <ListingReviews
-          listingId={listing.id}
-          currentUser={currentUser}
-          reviewableReservationId={reviewableReservationId}
-        />
+        <div ref={reviewsRef}>
+          <ListingReviews
+            listingId={listing.id}
+            currentUser={currentUser}
+            reviewableReservationId={reviewableReservationId}
+          />
+        </div>
       </div>
+
+      <PaymentModal
+        isOpen={showPayment}
+        totalPrice={totalPrice}
+        tokenBalance={tokenBalance}
+        holdExpiresAt={holdExpiresAt}
+        isLoading={isLoading}
+        onConfirm={onConfirmPayment}
+        onCancel={onCancelPayment}
+      />
     </Container>
   );
 };

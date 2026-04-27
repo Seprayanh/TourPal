@@ -49,7 +49,7 @@ function ActivityRow({ item, index }) {
         <p className="text-xs text-gray-400">{item.userName}</p>
       </div>
       <div className="text-right ml-4 flex-shrink-0">
-        <p className="text-sm font-semibold text-gray-700">¥{item.totalPrice?.toLocaleString()}</p>
+        <p className="text-sm font-semibold text-gray-700">$ {item.totalPrice?.toLocaleString()}</p>
         <p className="text-xs text-gray-400">{date}</p>
       </div>
     </div>
@@ -67,7 +67,7 @@ function ListingRow({ item, index }) {
       </div>
       <div className="text-right ml-4 flex-shrink-0">
         <p className="text-sm font-semibold text-gray-700">{item.reservationCount} 单</p>
-        <p className="text-xs text-gray-400">¥{item.price}/次</p>
+        <p className="text-xs text-gray-400">$ {item.price}/次</p>
       </div>
     </div>
   );
@@ -251,14 +251,61 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-          <h2 className="text-base font-semibold text-gray-800 mb-1">最近预订记录</h2>
-          <p className="text-xs text-gray-400 mb-4">Recent Reservations · 最新 5 笔订单</p>
-          {recentActivity.length === 0 ? (
-            <p className="text-sm text-gray-400">暂无预订记录</p>
-          ) : (
-            recentActivity.map((item, i) => <ActivityRow key={item.id} item={item} index={i} />)
-          )}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <h2 className="text-base font-semibold text-gray-800 mb-1">最近预订记录</h2>
+            <p className="text-xs text-gray-400 mb-4">Recent Reservations · 最新 5 笔订单</p>
+            {recentActivity.length === 0 ? (
+              <p className="text-sm text-gray-400">暂无预订记录</p>
+            ) : (
+              recentActivity.map((item, i) => <ActivityRow key={item.id} item={item} index={i} />)
+            )}
+          </div>
+
+          <div className="bg-white rounded-xl border border-rose-200 shadow-sm p-6">
+            <h2 className="text-base font-semibold text-rose-700 mb-1">差评记录 ⚠</h2>
+            <p className="text-xs text-gray-400 mb-4">Low-Rating Reviews (≤ 2 stars) · Real-time · 最新 10 条</p>
+            {!qualityMetrics?.recentDefectReviews?.length ? (
+              <p className="text-sm text-gray-400">暂无差评记录</p>
+            ) : (
+              <div className="space-y-0">
+                {qualityMetrics.recentDefectReviews.map((r, i) => (
+                  <div
+                    key={r.id}
+                    className={`py-3 ${i !== 0 ? "border-t border-gray-100" : ""}`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-800 truncate">{r.listingTitle}</p>
+                        <p className="text-xs text-gray-400">{r.reviewer}</p>
+                        {r.comment && (
+                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">&ldquo;{r.comment}&rdquo;</p>
+                        )}
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <div className="flex items-center gap-0.5 justify-end">
+                          {Array.from({ length: r.rating }).map((_, k) => (
+                            <span key={k} className="text-rose-500 text-sm">★</span>
+                          ))}
+                          {Array.from({ length: 5 - r.rating }).map((_, k) => (
+                            <span key={k} className="text-gray-200 text-sm">★</span>
+                          ))}
+                        </div>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {new Date(r.createdAt).toLocaleDateString("zh-CN", { month: "short", day: "numeric" })}
+                        </p>
+                        {r.resolvedAt ? (
+                          <span className="text-xs text-green-600 font-medium">已处理</span>
+                        ) : (
+                          <span className="text-xs text-rose-500 font-medium">待处理</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </Container>
     </div>

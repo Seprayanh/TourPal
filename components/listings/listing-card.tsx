@@ -72,12 +72,21 @@ const ListingCard: React.FC<ListingCardProps> = ({
       <div className="w-full flex flex-col gap-2">
         <div className="relative w-full overflow-hidden rounded-xl aspect-square">
           {data.imageSrc ? (
-            <Image
-              fill
-              src={data.imageSrc}
-              alt={`Listing ${data.title}`}
-              className="w-full h-full object-cover group-hover:scale-110 transition"
-            />
+            data.imageSrc.startsWith("data:") ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={data.imageSrc}
+                alt={`Listing ${data.title}`}
+                className="w-full h-full object-cover group-hover:scale-110 transition"
+              />
+            ) : (
+              <Image
+                fill
+                src={data.imageSrc}
+                alt={`Listing ${data.title}`}
+                className="w-full h-full object-cover group-hover:scale-110 transition"
+              />
+            )
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
               <AiOutlineFileImage size={50} />
@@ -88,16 +97,18 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         </div>
 
-        <h3 className="font-semibold text-lg">
-          {location?.region}, {location?.label}
-        </h3>
+        <h3 className="font-semibold text-lg">{data.title}</h3>
 
         <span className="font-light text-neutral-500">
+          {location?.label ?? data.locationValue}
+        </span>
+
+        <span className="font-light text-neutral-400 text-sm">
           {reservationDate || data.category}
         </span>
 
         <div className="flex items-center gap-1">
-          <span className="font-semibold">€ {price}</span>
+          <span className="font-semibold">$ {price}</span>
           {!reservation && <span className="font-light">/ night</span>}
         </div>
 

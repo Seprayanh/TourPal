@@ -25,6 +25,15 @@ export default async function getReservations(params: IParams) {
       };
     }
 
+    // Exclude cancelled reservations and expired locks from date-blocking queries
+    if (listingId && !userId && !authorId) {
+      const now = new Date();
+      query.OR = [
+        { status: { notIn: ["CANCELLED", "LOCKED"] } },
+        { status: "LOCKED", holdExpiresAt: { gt: now } },
+      ];
+    }
+
     const reservations = await prisma.reservation.findMany({
       where: query,
       include: {
@@ -42,6 +51,7 @@ export default async function getReservations(params: IParams) {
       endDate: reservation.endDate.toISOString(),
       checkInTime: reservation.checkInTime?.toISOString() ?? null,
       checkOutTime: reservation.checkOutTime?.toISOString() ?? null,
+      holdExpiresAt: reservation.holdExpiresAt?.toISOString() ?? null,
       listing: {
         ...reservation.listing,
         createdAt: reservation.listing.createdAt.toISOString(),

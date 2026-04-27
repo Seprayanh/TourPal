@@ -37,12 +37,21 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
       <div className="relative w-full h-[60vh] overflow-hidden rounded-xl">
         {imageSrc ? (
-          <Image
-            fill
-            src={imageSrc}
-            alt={title}
-            className="object-cover w-full"
-          />
+          imageSrc.startsWith("data:") ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imageSrc}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Image
+              fill
+              src={imageSrc}
+              alt={title}
+              className="object-cover w-full"
+            />
+          )
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
             <AiOutlineFileImage size={50} />
